@@ -19,7 +19,7 @@ public:
     }
     int getValue(int x, int y)const {return field[x][y];}
     char& getValue(int x, int y) {return field[x][y];}
-    int claenValue(int x, int y) { field[x][y] = -1;}
+    void claenValue(int x, int y) { field[x][y] = defaultValue_;}
 };
 
 

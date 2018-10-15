@@ -6,7 +6,7 @@
 #include "Field.h"
 
 
-using ENGENE = Engine<Field, EqualWiner<Field>>;
+using ENGENE = Engine<EqualWiner>;
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -37,7 +37,7 @@ Java_com_example_oem_game_game_getElvalue(JNIEnv *env, jobject instance, jlong T
         ENGENE* en = (ENGENE*) T;
         return en->getValue(x, y);
     }
-
+    return ENGENE::defaultValue;
 }
 
 extern "C"
@@ -58,7 +58,26 @@ Java_com_example_oem_game_game_isChange(JNIEnv *env, jobject instance, jlong T) 
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
-        en->isCange();
+        return en->isCange();
     }
+    return false;
+}
 
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_oem_game_game_startReading__J(JNIEnv *env, jobject instance, jlong T) {
+
+    if (T != 0) {
+        ENGENE *en = (ENGENE *) T;
+        en->startReading();
+    }
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_oem_game_game_endReading__J(JNIEnv *env, jobject instance, jlong T) {
+
+    if(T != 0) {
+        ENGENE* en = (ENGENE*) T;
+        en->endReading();
+    }
 }

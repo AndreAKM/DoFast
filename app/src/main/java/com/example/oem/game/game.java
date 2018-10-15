@@ -63,12 +63,12 @@ public class game extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    List<Integer> color = Arrays.asList(Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.LTGRAY);
+    List<Integer> color = Arrays.asList(Color.BLACK, Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.LTGRAY);
     Random rnd = new Random(System.currentTimeMillis());
     long T;
 
     Integer getColor(int x, int y) {
-        return getElvalue(T, x, y);
+        return color.get(getElvalue(T, x, y));
     }
 
     void swap(int x1, int y1, int x2, int y2) {
@@ -78,13 +78,23 @@ public class game extends AppCompatActivity {
     boolean isCange() {
         return isChange(T);
     }
+    public void startReading() {
+        startReading(T);
+    }
+
+    public void endReading() {
+        endReading(T);
+    }
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    public native long createEngine(int fieldSize, int elCount);
-    public native void destry(long T);
-    public native int getElvalue(long T, int x, int y);
-    public native void swap(long T, int x1, int y1, int x2, int y2);
-    public native boolean isChange(long T);
+    private native long createEngine(int fieldSize, int elCount);
+    private native void destry(long T);
+    private native int getElvalue(long T, int x, int y);
+    private native void swap(long T, int x1, int y1, int x2, int y2);
+    private native boolean isChange(long T);
+    private native void startReading(long T);
+    private native void endReading(long T);
     }

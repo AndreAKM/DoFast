@@ -9,7 +9,8 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
-template<class Field,class WinCondition>
+#include "Field.h"
+template<class WinCondition>
 class Engine {
     const int fieldSize;
     int elemetTotal;
@@ -43,8 +44,8 @@ private:
 #include <unordered_set>
 #include <algorithm>
 #include <cstring>
-template <class Field, class WinCondition>
-Engine<Field, WinCondition>::Engine(int fieldSize, int elCount):
+template < class WinCondition>
+Engine<WinCondition>::Engine(int fieldSize, int elCount):
         fieldSize(fieldSize),
         elemetTotal(elCount + 1),
         reading(false),
@@ -55,71 +56,75 @@ Engine<Field, WinCondition>::Engine(int fieldSize, int elCount):
     full(0, 0, fieldSize, fieldSize);
     changed = true;
 }
-template <class Field, class WinCondition>
-void Engine<Field, WinCondition>::swap(int x1, int y1, int x2, int y2) {
+template < class WinCondition>
+void Engine<WinCondition>::swap(int x1, int y1, int x2, int y2) {
     if(reading) return;
     std::swap( field.getValue(x1,y1), field.getValue(x2,y2));
-    auto cleanSize = win.check(x1, y1);
-    cleanSize += win.check(x2, y2);
+    auto cleanSize = win.checkEl(x1, y1);
+    cleanSize += win.checkEl(x2, y2);
     changed = changed || (cleanSize != 0);
     countVoit += cleanSize;
 }
-template <class Field, class WinCondition>
-int Engine<Field, WinCondition>::getValue(int x, int y) const{
+template < class WinCondition>
+int Engine<WinCondition>::getValue(int x, int y) const{
     return field.getValue(x,y);
 }
-template <class Field, class WinCondition>
-void Engine<Field, WinCondition>::startReading(){
+template < class WinCondition>
+void Engine<WinCondition>::startReading(){
     std::unique_lock<std::mutex>lk (mut);
-    changeState.wait(lk, processing);
+    changeState.wait(lk, [&] {return processing == false;});
     reading = true;
 }
-template <class Field, class WinCondition>
-void Engine<Field, WinCondition>::endReading(){
+template < class WinCondition>
+void Engine<WinCondition>::endReading(){
     reading = false;
-    this->changed = false;
+    changed = false;
     auto res = win.move();
-    if(res.size() == 0) return;
+    if(res.size() == 0){
+        if(win.hasEmptyBlocks()){
+            full(0, 0, fieldSize, fieldSize);
+            changed == true;
+        }
+        return;
+    }
     processing = true;
+    win.refrashe();
     for (auto& r: res) {
         swap(r);
     }
     if(changed == false) {
-        int x1, y1, x2, y2;
-        std::tie(x1, y1, x2, y2) = win.change_range();
-        full(x1, y1, x2, y2);
-        win.refrashe();
+        full(0, 0, fieldSize, fieldSize);
     }
     processing = false;
     changed = true;
     changeState.notify_all();
 }
-template <class Field, class WinCondition>
-void Engine<Field, WinCondition>::swap(std::tuple<int, int, int, int> coor){
+template < class WinCondition>
+void Engine<WinCondition>::swap(std::tuple<int, int, int, int> coor){
     int x1, y1, x2, y2;
     std::tie(x1, y1, x2, y2) = coor;
     swap(x1, y1, x2, y2);
 }
-template <class Field, class WinCondition>
-void Engine<Field, WinCondition>::full(int tx, int ty, int bx, int by) {
+template < class WinCondition>
+void Engine<WinCondition>::full(int tx, int ty, int bx, int by) {
     for (int x = tx; x < bx; ++x) {
         for (int y = ty; y < by; ++y) {
-            if( field.getValue(x,y) != defaultValue) {
+            if( field.getValue(x,y) == defaultValue) {
                 changed = true;
                 field.getValue(x,y) = defValue(x,y);
             }
         }
     }
 }
-template <class Field, class WinCondition>
-int Engine<Field, WinCondition>::defValue(int x, int y) {
-    char el[elemetTotal];
+template <class WinCondition>
+int Engine<WinCondition>::defValue(int x, int y) {
+    char el[6];
     memset(el, defaultValue, sizeof(el));
-    if (x > 0) el[ field.getValue(x - 1,y)];
-    if (y < 0) el[ field.getValue(x,y - 1)];
-    if (x < fieldSize - 1) el[ field.getValue(x + 1,y)];
-    if (x < fieldSize - 1) el[ field.getValue(x,y+1)];
-    int res = std::rand() % elemetTotal;
+    if (x > 0) el[ field.getValue(x - 1,y)]=1;
+    if (y < 0) el[ field.getValue(x,y - 1)]=1;
+    if (x < fieldSize - 1) el[ field.getValue(x + 1,y)]=1;
+    if (x < fieldSize - 1) el[ field.getValue(x,y+1)]=1;
+    int res = 1 + (std::rand() % (elemetTotal - 1));
     for (int i = res ; i != elemetTotal; ++i) {
         if (el[i] == defaultValue) return i;
     }

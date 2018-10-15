@@ -37,11 +37,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         if (isDrawing()) {
             drawField(canvas);
+            drawing = false;
         }
     }
 
     void drawField(Canvas canvas) {
         int step = radius / 8;
+        main.startReading();
         for (int y = 0; y < radius; y += step){
             for (int x = 0; x < radius; x += step){
                 Log.d(TAG, String.format("onDraw: (%d, %d) - (%d, %d)", x, y, x + step, y + step));
@@ -51,6 +53,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 canvas.drawRect(x, y, x + step, y + step, paint);
             }
         }
+        main.endReading();
     }
     int idField(float x) {
         int step = radius / 8;
@@ -59,12 +62,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     void swap() {
         int x1= idField(initX);
         int y1 = idField(initY);
-        int x2 = x1;
-        int y2 = y1;
-        if(endX < initX) --x2;
-        if(endX > initX) ++x2;
-        if(endY < initY) --y2;
-        if(endY > initY) ++y2;
+        int x2 = idField(endX);
+        int y2 = idField(endY);
+
+        if(x2 < x1) x2 = x1 - 1;
+        if(x2 > x1) x2 = x1 + 1;
+        if(y2 < y1) y2 = y1 - 1;
+        if(y2 > y1) y2 = y1 + 1;
         main.swap(x1, y1, x2, y2);
     }
     @Override
@@ -78,11 +82,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         } else if (action == MotionEvent.ACTION_DOWN) {
             initX = event.getX();
             initY = event.getY();
-            //radius = 1;
-            drawing = true;
         } else if (action == MotionEvent.ACTION_UP) {
             swap();
-            drawing = false;
         }
 
         return true;
