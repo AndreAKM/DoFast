@@ -1,5 +1,6 @@
 package com.example.oem.game;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,8 +33,8 @@ public class game extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    private static final int FieldSize = 8;
-    private static final int ColorCount = 5;
+    public static final int FieldSize = 8;
+    public static final int ColorCount = 5;
     private static final int Sequence = 3;
     private static final String FieldState = "FieldState";
 
@@ -42,7 +43,7 @@ public class game extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         T = createEngine(8, 5);
     }
 
@@ -69,8 +70,7 @@ public class game extends AppCompatActivity {
         int widht = display.getWidth();
         int height = display.getHeight();
 
-        int radius = Math.min(widht, height);
-        setContentView(new GameView(this, radius));
+        setContentView(new GameView(this, widht, height));
     }
 
     @Override
@@ -129,6 +129,9 @@ public class game extends AppCompatActivity {
     Integer getColor(int x, int y) {
         return color.get(getElvalue(T, x, y));
     }
+    Integer getDefaultColor() {
+        return color.get(0);
+    }
 
     void swap(int x1, int y1, int x2, int y2) {
         swap(T, x1, y1, x2, y2);
@@ -158,7 +161,6 @@ public class game extends AppCompatActivity {
     private native void endReading(long T);
     private native void startChanging(long T);
     private native void endChanging(long T);
-
     private native void setElvalue(long T, int x, int y, int value);
     private native int getCount(long T);
     }

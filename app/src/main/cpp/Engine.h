@@ -72,7 +72,8 @@ void Engine<WinCondition>::action(int x1, int y1, int x2, int y2) {
 }
 template < class WinCondition>
 bool Engine<WinCondition>::swap(int x1, int y1, int x2, int y2) {
-    if(reading) return false;
+    std::unique_lock<std::mutex>lk (mut);
+    changeState.wait(lk, [&] {return reading == false;});
     std::swap( field.getValue(x1,y1), field.getValue(x2,y2));
     auto cleanSize = win.checkEl(x1, y1);
     cleanSize += win.checkEl(x2, y2);
@@ -107,6 +108,7 @@ template < class WinCondition>
 void Engine<WinCondition>::endReading(){
     reading = false;
     changed = false;
+    changeState.notify_all();
     countVoit = 0;
     auto res = win.move();
     if(res.size() == 0){
