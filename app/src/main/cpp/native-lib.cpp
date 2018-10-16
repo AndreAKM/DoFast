@@ -47,7 +47,7 @@ Java_com_example_oem_game_game_swap(JNIEnv *env, jobject instance, jlong T, jint
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
-        en->swap(x1, y1, x2, y2);
+        en->action(x1, y1, x2, y2);
     }
 
 }
@@ -79,5 +79,43 @@ Java_com_example_oem_game_game_endReading__J(JNIEnv *env, jobject instance, jlon
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         en->endReading();
+    }
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_oem_game_game_getCount(JNIEnv *env, jobject instance, jlong T) {
+
+    if(T != 0) {
+        ENGENE* en = (ENGENE*) T;
+        en->count();
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_oem_game_game_setElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y,
+                                          jint value) {
+    if(T != 0) {
+        ENGENE* en = (ENGENE*) T;
+        en->setValue(x, y, value);
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_oem_game_game_startChanging(JNIEnv *env, jobject instance, jlong T) {
+    if(T != 0) {
+        ENGENE* en = (ENGENE*) T;
+        en->startChanging();
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_oem_game_game_endChanging(JNIEnv *env, jobject instance, jlong T) {
+    if(T != 0) {
+        ENGENE* en = (ENGENE*) T;
+        en->endChanging();
     }
 }
