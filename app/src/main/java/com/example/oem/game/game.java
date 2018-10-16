@@ -27,6 +27,7 @@ import java.util.Random;
 public class game extends AppCompatActivity {
 
     private static final String TAG = game.class.getName();
+    public static final String GameName = "DoFaster";
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -147,7 +148,7 @@ public class game extends AppCompatActivity {
     public void endReading() {
         endReading(T);
     }
-
+    public int getCount(){return getCount(T);}
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.

@@ -1,6 +1,7 @@
 package com.example.oem.game;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,22 +15,29 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.sql.Time;
+import java.util.Calendar;
+
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     String TAG = GameView.class.getName();
     public GameView(Context context,int i_screanW, int i_screanH) {
         super(context);
         main = (game) context;
-        elCount=main.FieldSize;
+        elCount = main.FieldSize;
         screanH = i_screanH;
         screanW = i_screanW;
         radius = (Math.min(screanH - shiftY, screanW - (2*shiftX)) /elCount) * elCount;
         int rad = (Math.min(screanH, screanW) );
         borderRect = new Rect(0, 0, rad, rad);
-
+        currentCountBorderRect  = new Rect(60, rad + 60, (rad / 2) - 30, rad + 240);
+        bestCountBorderRect = new Rect((rad/2) + 30, rad + 60, (rad - 60), rad + 240);
         border = BitmapFactory.decodeResource(getResources(), R.drawable.border);
         background = BitmapFactory.decodeResource(
                 getResources(), R.drawable.background);
+        prevCount = Calendar.getInstance().getTimeInMillis();
+        sharedPreferences = main.getSharedPreferences(main.GameName, Context.MODE_PRIVATE);
+        bestResult = sharedPreferences.getInt(BestResultSP,0);
         init();
     }
     private int elCount = 8;
@@ -46,7 +54,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     Bitmap border;
     Bitmap background;
+
     Rect borderRect;
+    Rect currentCountBorderRect;
+    Rect bestCountBorderRect;
+
     boolean isDrawing() { return drawing||main.isCange();}
 
     @Override
@@ -61,13 +73,53 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
         if (isDrawing()) {
             fieldDrowing(canvas);
+            counting();
             drawing = false;
         }
+    }
+
+    Integer count = new Integer(0);
+    Integer bestResult = new Integer(0);
+    Integer currentcount = new Integer(0);
+    private static final String BestResultSP = "BEST-RESULT";
+    SharedPreferences sharedPreferences;
+    long prevCount;
+    void counting() {
+
+        synchronized (count) {
+            long ct = Calendar.getInstance().getTimeInMillis();
+            long interval = ct - prevCount;
+            count += main.getCount();
+            if (interval < 1000) return;
+            currentcount = (int)((float)(count) / (interval / 1000)*60);
+            count = 0;
+            prevCount = ct;
+            if(bestResult < currentcount) {
+                bestResult =currentcount;
+                SharedPreferences.Editor e = sharedPreferences.edit();
+                e.putInt(BestResultSP, bestResult);
+                e.apply();
+            }
+        }
+
     }
 
     void backgroundDrowing(Canvas canvas){
         canvas.drawBitmap(background, 0 , 0, paint);
         canvas.drawBitmap(border, null , borderRect, paint);
+        canvas.drawBitmap(border, null , currentCountBorderRect, paint);
+        canvas.drawBitmap(border, null , bestCountBorderRect, paint);
+        Paint shadowPaint = new Paint();
+        shadowPaint.setAntiAlias(true);
+        shadowPaint.setTextSize(200.0f);
+        shadowPaint.setStrokeWidth(20.0f);
+        shadowPaint.setStyle(Paint.Style.STROKE);
+        shadowPaint.setShadowLayer(5.0f, 10.0f, 10.0f, Color.BLACK);
+
+        shadowPaint.setColor(Color.MAGENTA);
+        canvas.drawText(currentcount.toString(), currentCountBorderRect.left + 20, currentCountBorderRect.top + 160, shadowPaint);
+        shadowPaint.setColor(Color.GREEN);
+        canvas.drawText(bestResult.toString(), bestCountBorderRect.left + 20, bestCountBorderRect.top + 160, shadowPaint);
     }
 
     void moveDrowing(Canvas canvas) {

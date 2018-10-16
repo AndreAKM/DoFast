@@ -88,8 +88,9 @@ Java_com_example_oem_game_game_getCount(JNIEnv *env, jobject instance, jlong T) 
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
-        en->count();
+        return en->count();
     }
+    return 0;
 }
 
 extern "C"
