@@ -30,8 +30,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         radius = (Math.min(screanH - shiftY, screanW - (2*shiftX)) /elCount) * elCount;
         int rad = (Math.min(screanH, screanW) );
         borderRect = new Rect(0, 0, rad, rad);
-        currentCountBorderRect  = new Rect(60, rad + 60, (rad / 2) - 30, rad + 240);
-        bestCountBorderRect = new Rect((rad/2) + 30, rad + 60, (rad - 60), rad + 240);
+        int t =rad + 60;
+        currentCountBorderRect  = new Rect(80, t, (rad) - 80, t + 220);
+        t =currentCountBorderRect.bottom + 60;
+        bestCountBorderRect = new Rect(80, t, (rad - 80), t + 220);
         border = BitmapFactory.decodeResource(getResources(), R.drawable.border);
         background = BitmapFactory.decodeResource(
                 getResources(), R.drawable.background);
@@ -103,7 +105,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
     }
-
+    float startOftext(Rect rec, String coutS, float sizeS) {
+        float center = (rec.right + rec.left)/2;
+        return center - (coutS.length() * sizeS / 2 );
+    }
     void backgroundDrowing(Canvas canvas){
         canvas.drawBitmap(background, 0 , 0, paint);
         canvas.drawBitmap(border, null , borderRect, paint);
@@ -115,11 +120,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         shadowPaint.setStrokeWidth(20.0f);
         shadowPaint.setStyle(Paint.Style.STROKE);
         shadowPaint.setShadowLayer(5.0f, 10.0f, 10.0f, Color.BLACK);
-
         shadowPaint.setColor(Color.MAGENTA);
-        canvas.drawText(currentcount.toString(), currentCountBorderRect.left + 20, currentCountBorderRect.top + 160, shadowPaint);
+
+        canvas.drawText(currentcount.toString(),
+                startOftext(currentCountBorderRect, currentcount.toString(), 100.0f),
+                currentCountBorderRect.bottom -40, shadowPaint);
         shadowPaint.setColor(Color.GREEN);
-        canvas.drawText(bestResult.toString(), bestCountBorderRect.left + 20, bestCountBorderRect.top + 160, shadowPaint);
+        canvas.drawText(bestResult.toString(),
+                startOftext(bestCountBorderRect, bestResult.toString(), 100.0f),
+                bestCountBorderRect.bottom - 40, shadowPaint);
     }
 
     void moveDrowing(Canvas canvas) {
