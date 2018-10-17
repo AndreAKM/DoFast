@@ -37,7 +37,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public GameView(Context context,int i_screanW, int i_screanH) {
         super(context);
         main = (DoFast) context;
-        elCount = main.FieldSize;
+        elCount = DoFast.FieldSize;
         screanH = i_screanH;
         screanW = i_screanW;
         radius = (Math.min(screanH - shiftY, screanW - (2*shiftX)) /elCount) * elCount;
@@ -110,7 +110,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         public Counter() {
             prevCount = Calendar.getInstance().getTimeInMillis();
-            sharedPreferences = main.getSharedPreferences(main.GameName, Context.MODE_PRIVATE);
+            sharedPreferences = main.getSharedPreferences(DoFast.GameName, Context.MODE_PRIVATE);
             bestResult = sharedPreferences.getInt(BestResultSP,0);
         }
 

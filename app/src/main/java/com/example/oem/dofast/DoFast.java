@@ -13,6 +13,7 @@ import android.view.Display;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 
 import org.json.JSONArray;
@@ -46,6 +47,7 @@ public class DoFast extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_game);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         T = createEngine(8, 5);
     }
@@ -72,8 +74,10 @@ public class DoFast extends AppCompatActivity {
 
         int widht = display.getWidth();
         int height = display.getHeight();
-
-        setContentView(new GameView(this, widht, height));
+        GameView gameView= new GameView(this, widht, height);
+        LinearLayout surface = (LinearLayout)findViewById(R.id.middleSurface);
+        surface.addView(gameView);
+        //setContentView();
     }
 
     @Override

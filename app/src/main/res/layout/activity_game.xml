@@ -12,5 +12,9 @@
     tools:context=".DoFast">
 
 
-
+    <LinearLayout
+        android:id="@+id/middleSurface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 </android.support.design.widget.CoordinatorLayout>
