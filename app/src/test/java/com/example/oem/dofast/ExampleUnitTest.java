@@ -1,4 +1,4 @@
-package com.example.oem.game;
+package com.example.oem.dofast;
 
 import org.junit.Test;
 

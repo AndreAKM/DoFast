@@ -10,7 +10,7 @@ using ENGENE = Engine<EqualWiner>;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_game_game_destry(JNIEnv *env, jobject instance, jlong T) {
+Java_com_example_oem_dofast_DoFast_destry(JNIEnv *env, jobject instance, jlong T) {
 
     if(T != 0) {
     ENGENE* en = (ENGENE*) T;
@@ -21,7 +21,7 @@ Java_com_example_oem_game_game_destry(JNIEnv *env, jobject instance, jlong T) {
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_example_oem_game_game_createEngine(JNIEnv *env, jobject instance, jint fieldSize,
+Java_com_example_oem_dofast_DoFast_createEngine(JNIEnv *env, jobject instance, jint fieldSize,
                                             jint elCount) {
 
     ENGENE* en = new ENGENE(fieldSize, elCount);
@@ -31,7 +31,7 @@ Java_com_example_oem_game_game_createEngine(JNIEnv *env, jobject instance, jint 
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_oem_game_game_getElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y) {
+Java_com_example_oem_dofast_DoFast_getElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y) {
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -42,7 +42,7 @@ Java_com_example_oem_game_game_getElvalue(JNIEnv *env, jobject instance, jlong T
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_game_game_swap(JNIEnv *env, jobject instance, jlong T, jint x1, jint y1,
+Java_com_example_oem_dofast_DoFast_swap__JIIII(JNIEnv *env, jobject instance, jlong T, jint x1, jint y1,
                                     jint x2, jint y2) {
 
     if(T != 0) {
@@ -54,7 +54,7 @@ Java_com_example_oem_game_game_swap(JNIEnv *env, jobject instance, jlong T, jint
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_example_oem_game_game_isChange(JNIEnv *env, jobject instance, jlong T) {
+Java_com_example_oem_dofast_DoFast_isChange(JNIEnv *env, jobject instance, jlong T) {
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -65,7 +65,7 @@ Java_com_example_oem_game_game_isChange(JNIEnv *env, jobject instance, jlong T) 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_game_game_startReading__J(JNIEnv *env, jobject instance, jlong T) {
+Java_com_example_oem_dofast_DoFast_startReading__J(JNIEnv *env, jobject instance, jlong T) {
 
     if (T != 0) {
         ENGENE *en = (ENGENE *) T;
@@ -74,7 +74,7 @@ Java_com_example_oem_game_game_startReading__J(JNIEnv *env, jobject instance, jl
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_game_game_endReading__J(JNIEnv *env, jobject instance, jlong T) {
+Java_com_example_oem_dofast_DoFast_endReading__J(JNIEnv *env, jobject instance, jlong T) {
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -84,7 +84,7 @@ Java_com_example_oem_game_game_endReading__J(JNIEnv *env, jobject instance, jlon
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_oem_game_game_getCount(JNIEnv *env, jobject instance, jlong T) {
+Java_com_example_oem_dofast_DoFast_getCount__J(JNIEnv *env, jobject instance, jlong T) {
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -95,7 +95,7 @@ Java_com_example_oem_game_game_getCount(JNIEnv *env, jobject instance, jlong T) 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_game_game_setElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y,
+Java_com_example_oem_dofast_DoFast_setElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y,
                                           jint value) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -105,7 +105,7 @@ Java_com_example_oem_game_game_setElvalue(JNIEnv *env, jobject instance, jlong T
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_game_game_startChanging(JNIEnv *env, jobject instance, jlong T) {
+Java_com_example_oem_dofast_DoFast_startChanging(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         en->startChanging();
@@ -114,9 +114,10 @@ Java_com_example_oem_game_game_startChanging(JNIEnv *env, jobject instance, jlon
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_game_game_endChanging(JNIEnv *env, jobject instance, jlong T) {
+Java_com_example_oem_dofast_DoFast_endChanging(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         en->endChanging();
     }
 }
+

@@ -1,32 +1,25 @@
-package com.example.oem.game;
+package com.example.oem.dofast;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.Window;
-import android.widget.TextView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class game extends AppCompatActivity {
+public class DoFast extends AppCompatActivity {
 
-    private static final String TAG = game.class.getName();
+    private static final String TAG = DoFast.class.getName();
     public static final String GameName = "DoFaster";
 
     // Used to load the 'native-lib' library on application startup.

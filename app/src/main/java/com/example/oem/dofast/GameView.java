@@ -1,4 +1,4 @@
-package com.example.oem.game;
+package com.example.oem.dofast;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,14 +8,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -25,7 +22,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     String TAG = GameView.class.getName();
     public GameView(Context context,int i_screanW, int i_screanH) {
         super(context);
-        main = (game) context;
+        main = (DoFast) context;
         elCount = main.FieldSize;
         screanH = i_screanH;
         screanW = i_screanW;
@@ -47,7 +44,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private static int shiftY = 35;
     private int screanW = 20;
     private int screanH = 60;
-    game main;
+    DoFast main;
     private GameThread thread;
     private float initX, initY, endX, endY;
             int radius;

@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.example.oem.game"
+        applicationId "com.example.oem.DoFast"
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
