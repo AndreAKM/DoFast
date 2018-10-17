@@ -1,6 +1,9 @@
 # DoFast
 
 <hr>
+
+h2 Description
+
 This is a game for android  like  Midas  Miner  for  reference:  
 http://www.royalgames.com/games/puzzle-­games/miner-­speed/  
 
@@ -21,6 +24,13 @@ in  from  the  top  to  fill  the  board.
 ●   The game counts how mach blocks you can remuved during last 15 secunds.
 
 <hr>
+h2 Technology
+
 ● Logick of the game implemented in native code.
 
 ● Implemention of grphix base on [android.view.SurfaceView](https://developer.android.com/reference/android/view/SurfaceView)
+
+<hr>
+h2 Instalation
+
+● Signed apk you can find in [app/release/]
