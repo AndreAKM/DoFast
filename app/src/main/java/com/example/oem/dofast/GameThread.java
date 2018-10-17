@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018.
+ * Create by Andrey Moiseenko for DoFast project
+ */
+
 package com.example.oem.dofast;
 
 import android.graphics.Bitmap;

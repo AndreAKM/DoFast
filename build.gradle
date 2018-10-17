@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018.
+ * Create by Andrey Moiseenko for DoFast project
+ */
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {

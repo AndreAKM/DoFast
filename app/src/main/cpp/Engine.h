@@ -1,6 +1,7 @@
-//
-// Created by oem on 2018-10-14.
-//
+/*
+ * Copyright (c) 2018.
+ * Create by Andrey Moiseenko for DoFast project
+ */
 
 #ifndef GAME_ENGINE_H
 #define GAME_ENGINE_H
@@ -10,31 +11,115 @@
 #include <condition_variable>
 #include <atomic>
 #include "Field.h"
+
+/**
+ * @class Engine - implementation of game engine.
+ * The class is tamplate from strategy which defines of the game rules. The strategy should
+ * implemented the following methods ( move(), hasEmptyBlocks, refrashe, checkEl).
+ * Please fined them description in @class EqualWiner.
+ * The Engine encapsulate State machine of a game. It implements methods to process user actions,
+ * to access game field elements, to count result of player actions. The methods is thread save.
+ */
+
+ /* TODO This is no priority list.
+  * 1) reimplement field filing as a strategy;
+  * 2) think about implementing of WinCondition as a interface base hierarchy to avoid template;
+  * 3) move SequenceSize into WinCondition, add opportunity set the value from java;
+  * 4) change tipe of Field to unique_ptr, and send it int WinCondition as weak_ptr;
+  * 5) add int constructor factory methods to create WinCondition and Field;
+  * 6) add supporting of difirence size for widht anf height.
+  */
 template<class WinCondition>
 class Engine {
-    const int fieldSize;
-    static constexpr int SequenceSize = 3;
-    int elemetTotal;
+
+    /**
+     * General the enging settings
+     */
+    const int fieldSize; //!< size of game field
+    static constexpr int SequenceSize = 3; //!< number of element sequence to win step
+    int elemetTotal; //!< count of field value variant
+
+    /**
+     * thread driving values
+     */
     std::atomic_bool changed;
     std::atomic_bool reading;
     std::atomic_bool processing;
     std::condition_variable changeState;
     std::mutex mut;
-    long countVoit = 0;
-    Field field;
-    WinCondition win;
+
+    /**
+     * other data
+     */
+    long countVoit = 0; //!<  counte how mach blocs was wined from previous reading
+    Field field; //!< gane field
+    WinCondition win; //!< game rule startegy
 
 public:
-    static const int defaultValue = 0;
+    static const int defaultValue = 0; //!< id of default value
+
+    /**
+     * constructor
+     * @param fieldSize - count of the game blocs in rows and columns
+     * @param elCount - count of value variants except default value
+     */
     Engine(int fieldSize, int elCount);
+
+    /**
+     * getter for a block value
+     * @param x - x coordinate of block
+     * @param y - y coordinate of block
+     * @return of id value
+     */
     int getValue(int x, int y)const;
+
+    /**
+     * setter for a block value
+     * @param x - x coordinate of block
+     * @param y - y coordinate of block
+     * @param value- a new id value for block
+     */
     void setValue(int x, int y, int value) {field.getValue(x, y) = value;}
+
+    /**
+     * checks of chenging
+     * @return true if the enging collect some change of play field which have not read yet.
+     */
     bool isCange() const{ return changed;}
+
+    /**
+     * lock game field for reading
+     */
     void startReading();
+
+    /**
+     * unlock the game field
+     */
     void endReading();
+
+    /**
+     * lock the game field for data loading
+     */
     void startChanging();
+
+    /**
+     * unlock the data field
+     */
     void endChanging();
+
+    /**
+     * processing user action
+     * @param x1 x - coordinate of block first
+     * @param y1 y - coordinate of block first
+     * @param x2 x - coordinate of block second
+     * @param y2 y - coordinate of block second
+     */
     void action(int x1, int y1, int x2, int y2);
+
+    /**
+     * getter of conter
+     * @return count of blocks which value was chenged from last reading
+     */
     int count()const { return countVoit;}
 
 private:
@@ -149,8 +234,7 @@ void Engine<WinCondition>::full(int tx, int ty, int bx, int by) {
 }
 template <class WinCondition>
 int Engine<WinCondition>::defValue(int x, int y) {
-    char el[6];
-    memset(el, 0, sizeof(el));
+    std::vector<char> el(elemetTotal, 0);
     int startx = std::max(x - SequenceSize, 0);
     int maxx = std::min(x + SequenceSize + 1, fieldSize);
     int starty = std::max(y - SequenceSize, 0);

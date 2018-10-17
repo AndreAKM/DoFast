@@ -1,6 +1,7 @@
-//
-// Created by oem on 2018-10-14.
-//
+/*
+ * Copyright (c) 2018.
+ * Create by Andrey Moiseenko for DoFast project
+ */
 
 #include "EqualWiner.h"
 #include <algorithm>
@@ -19,21 +20,6 @@ std::list<std::tuple<int, int, int, int>> EqualWiner::move() {
     }
     return res;
 
-};
-
-std::tuple<int, int, int, int> EqualWiner::change_range() {
-    if(changeRange.size() == 0)
-        return std::make_tuple(0,0,0,0);
-    int tx = fSizeX_, ty = fSizeY_, bx = 0, by = 0;
-    for(auto& ch: changeRange) {
-        int tcx, tcy, bcx, bcy;
-        std::tie(tcx,tcy, bcx, bcy) = ch;
-        tx = std::min(tcx, tx);
-        ty = std::min(tcy, ty);
-        bx = std::max(bcx, bx);
-        by = std::max(bcy, by);
-    }
-    return std::make_tuple(tx, ty, bx, by);
 };
 
 void EqualWiner::refrashe(){

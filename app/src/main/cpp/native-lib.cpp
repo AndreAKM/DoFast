@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018.
+ * Create by Andrey Moiseenko for DoFast project
+ */
+
 #include <jni.h>
 #include <string>
 
@@ -6,7 +11,7 @@
 #include "Field.h"
 
 
-using ENGENE = Engine<EqualWiner>;
+using ENGENE = Engine<EqualWiner>; //!< Engine instance type
 
 extern "C"
 JNIEXPORT void JNICALL

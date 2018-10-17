@@ -127,7 +127,7 @@ public class DoFast extends AppCompatActivity {
 
     List<Integer> color =
             Arrays.asList(Color.BLACK, Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.LTGRAY);
-    /** < bloc colors collection
+    /** < block colors collection
      *
      * first element is default color. The color used fpr deleted blocs.
      */
@@ -158,10 +158,10 @@ public class DoFast extends AppCompatActivity {
 
     /**
      * swap blocs
-     * @param x1 x - coordinate of bloc first
-     * @param y1 y - coordinate of bloc first
+     * @param x1 x - coordinate of block first
+     * @param y1 y - coordinate of block first
      * @param x2 x - coordinate of block second
-     * @param y2 y - coordinate of bloc second
+     * @param y2 y - coordinate of block second
      */
     void swap(int x1, int y1, int x2, int y2) {
         swap(T, x1, y1, x2, y2);

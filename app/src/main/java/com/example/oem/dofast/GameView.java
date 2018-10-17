@@ -240,10 +240,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     /**
-     * get id of bloc from screen coordinate
+     * get id of block from screen coordinate
      * @param x - screen coordinate
      * @param shift - start shifting of the game field
-     * @return return id of the bloc
+     * @return return id of the block
      */
     int idField(float x, float shift) {
         int step = radius / 8;
