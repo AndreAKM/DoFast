@@ -16,7 +16,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
@@ -83,21 +85,32 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     Integer count = new Integer(0);
     Integer bestResult = new Integer(0);
     Integer currentcount = new Integer(0);
+
+    List<Float> lastMinResults = new ArrayList<>();
+    float summ = 0.f;
     private static final String BestResultSP = "BEST-RESULT";
     SharedPreferences sharedPreferences;
     long prevCount;
     void counting() {
+        if(main.getCount() == 0) return;
 
         synchronized (count) {
             long ct = Calendar.getInstance().getTimeInMillis();
-            long interval = ct - prevCount;
+            long interval = (ct - prevCount) / 1000;
             count += main.getCount();
-            if (interval < 1000) return;
-            currentcount = (int)((float)(count) / (interval / 1000)*60);
+            if (interval < 1) return;
+            float current = ((float)(count) / interval);
+            Log.d(TAG, String.format("Counter: count %d, interval %d, curent %f, sum %f, collect size %d", count, interval, current, summ, lastMinResults.size()));
+            lastMinResults.add(current);
+            summ += current;
             count = 0;
             prevCount = ct;
-            if(bestResult < currentcount) {
-                bestResult =currentcount;
+            currentcount = (int)summ;
+            if(lastMinResults.size() >= 15) {
+                summ -= lastMinResults.remove(0);
+            }
+            if (bestResult < currentcount) {
+                bestResult = currentcount;
                 SharedPreferences.Editor e = sharedPreferences.edit();
                 e.putInt(BestResultSP, bestResult);
                 e.apply();
@@ -154,8 +167,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         main.startReading();
         for (int y = shiftY; y < radius; y += step){
             for (int x = shiftX; x < radius; x += step){
-                Log.d(TAG, String.format("onDraw: (%d, %d) - (%d, %d)", x, y, x + step, y + step));
-                //paint.setAntiAlias(true);
                 paint.setStyle(Paint.Style.FILL);
                 paint.setColor(main.getColor(x / step, y / step));
                 canvas.drawRect(x, y, x + step, y + step, paint);
