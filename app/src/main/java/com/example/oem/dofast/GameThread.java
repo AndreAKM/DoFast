@@ -7,27 +7,31 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
-
+/**
+ * Class of player action processing thread
+ */
 public class GameThread extends Thread {
     private static final String TAG = GameThread.class.getName();
+
     private SurfaceHolder myThreadSurfaceHolder;
     private GameView myThreadSurfaceView;
     private boolean myThreadRun = false;
 
-
+    /**
+     * constructor
+     * @param surfaceHolder reference to surface holder
+     * @param surfaceView reference to the game view
+     */
     public GameThread(SurfaceHolder surfaceHolder,
-                        GameView surfaceView,
-                        Bitmap border, Rect borderRect) {
+                        GameView surfaceView) {
         myThreadSurfaceHolder = surfaceHolder;
         myThreadSurfaceView = surfaceView;
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
     }
 
     public void setRunning(boolean b) {
         myThreadRun = b;
     }
-    Paint mPaint;
+
     @Override
     public void run() {
         // super.run();
@@ -44,9 +48,6 @@ public class GameThread extends Thread {
                 Log.d(TAG, "Exception: " + e.toString());
             }
             finally {
-                // do this in a finally so that if an exception is thrown
-                // during the above, we don't leave the Surface in an
-                // inconsistent state
                 if (c != null) {
                     myThreadSurfaceHolder.unlockCanvasAndPost(c);
                 }

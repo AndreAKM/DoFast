@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018.
+ * Create by Andrey Moiseenko for DoFast project
+ */
+
 package com.example.oem.dofast;
 
 import android.content.Context;
@@ -17,9 +22,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-
+/**
+ * Class of the game view
+ */
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     String TAG = GameView.class.getName();
+
+    /**
+     * constructor
+     * @param context reference to DoFast
+     * @param i_screanW screen width
+     * @param i_screanH screen height
+     */
     public GameView(Context context,int i_screanW, int i_screanH) {
         super(context);
         main = (DoFast) context;
@@ -39,6 +53,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         counter =  new Counter();
         init();
     }
+
+    /**
+     * parameters which describe the game layout
+     */
     private int elCount = 8;
     private static int shiftX = 35;
     private static int shiftY = 35;
@@ -53,11 +71,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     Bitmap border;
     Bitmap background;
-
     Rect borderRect;
     Rect currentCountBorderRect;
     Rect bestCountBorderRect;
 
+    /**
+     * check should draw the game field
+     * @return true if the field should be re drown
+     */
     boolean isDrawing() { return drawing||main.isCange();}
 
     @Override
@@ -76,11 +97,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             drawing = false;
         }
     }
-    Counter counter = null;
+    Counter counter = null; //!< counter instance
+
+    /**
+     * class counter
+     */
     class Counter {
+
         private Integer count = new Integer(0);
         private static final String BestResultSP = "BEST-RESULT";
-        SharedPreferences sharedPreferences;
+        private SharedPreferences sharedPreferences;
 
         public Counter() {
             prevCount = Calendar.getInstance().getTimeInMillis();
@@ -96,13 +122,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             return currentcount;
         }
 
-        private Integer bestResult = new Integer(0);
+        private Integer bestResult = null;
         private Integer currentcount = new Integer(0);
 
         private List<Float> lastMinResults = new ArrayList<>();
         private float summ = 0.f;
         private long prevCount;
 
+        /**
+         * counting play results
+         * counting how mach block player could deleted during last 15 seconds
+         */
         public void counting() {
             if (main.getCount() == 0) return;
 
@@ -131,10 +161,23 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         }
     }
+
+    /**
+     * Calculate x coordinate to start printing text. It's used to position text in center of border
+     * @param rec - rectangle of border
+     * @param coutS - count of text symbols
+     * @param sizeS - average size of symbol
+     * @return return start text position
+     */
     float startOftext(Rect rec, String coutS, float sizeS) {
         float center = (rec.right + rec.left)/2;
         return center - (coutS.length() * sizeS / 2 );
     }
+
+    /**
+     * drowing all static layout elements
+     * @param canvas - canvas
+     */
     void backgroundDrowing(Canvas canvas){
         canvas.drawBitmap(background, 0 , 0, paint);
         canvas.drawBitmap(border, null , borderRect, paint);
@@ -157,6 +200,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 bestCountBorderRect.bottom - 40, shadowPaint);
     }
 
+    /**
+     * draw flying block which follows to user finger
+     * @param canvas - canvas
+     */
     void moveDrowing(Canvas canvas) {
         int step = radius / 8;
         int x= idField(initX, shiftX);
@@ -174,6 +221,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
+    /**
+     * draw game field
+     * @param canvas - canvas
+     */
     void fieldDrowing(Canvas canvas) {
         
         int step = radius / 8;
@@ -188,11 +239,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         main.endReading();
     }
 
+    /**
+     * get id of bloc from screen coordinate
+     * @param x - screen coordinate
+     * @param shift - start shifting of the game field
+     * @return return id of the bloc
+     */
     int idField(float x, float shift) {
         int step = radius / 8;
         return (int) ((x - shift)/step);
     }
 
+    /**
+     * swap first and last touched blocs
+     */
     void swap() {
         int x1= idField(initX, shiftX);
         int y1 = idField(initY, shiftY);
@@ -205,6 +265,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if(y2 > y1) y2 = y1 + 1;
         main.swap(x1, y1, x2, y2);
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // return super.onTouchEvent(event);
@@ -229,10 +290,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private void init() {
         mSurfaceHolder = getHolder();
         mSurfaceHolder.addCallback(this);
-        //Canvas c = mSurfaceHolder.lockCanvas();
-        //drawField(c);
-        //mSurfaceHolder.unlockCanvasAndPost(c);
-        setFocusable(true); // make sure we get key events
+        setFocusable(true);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(3);
@@ -248,8 +306,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         int rad = Math.min(screanH, screanW);
         Rect brect = new Rect(0, 0, rad, rad);
-        thread = new GameThread(getHolder(), this, BitmapFactory.decodeResource(
-                getResources(), R.drawable.border), brect);
+        thread = new GameThread(getHolder(), this);
         thread.setRunning(true);
         thread.start();
 

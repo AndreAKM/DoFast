@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018.
+ * Create by Andrey Moiseenko for DoFast project
+ */
+
 package com.example.oem.dofast;
 
 import android.content.pm.ActivityInfo;
@@ -17,6 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Activity class
+ */
 public class DoFast extends AppCompatActivity {
 
     private static final String TAG = DoFast.class.getName();
@@ -27,16 +35,17 @@ public class DoFast extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    public static final int FieldSize = 8;
-    public static final int ColorCount = 5;
-    private static final int Sequence = 3;
-    private static final String FieldState = "FieldState";
+    /**
+     *  Parameters to initial game Engine
+     */
+    public static final int FieldSize = 8;  //! <size of game field in game blocks
+    public static final int ColorCount = 5; //! <count of blocks color variants
+
+    private static final String FieldState = "FieldState"; //! <
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         T = createEngine(8, 5);
     }
@@ -116,32 +125,79 @@ public class DoFast extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    List<Integer> color = Arrays.asList(Color.BLACK, Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.LTGRAY);
-    Random rnd = new Random(System.currentTimeMillis());
-    long T;
+    List<Integer> color =
+            Arrays.asList(Color.BLACK, Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.LTGRAY);
+    /** < bloc colors collection
+     *
+     * first element is default color. The color used fpr deleted blocs.
+     */
 
+    long T; //!< instance of Engine
+
+    /**
+     * Wrappers under native methods
+     */
+
+    /**
+     * Get of bloc's color
+     * @param x x - coordinate
+     * @param y y - coordinate
+     * @return return color value
+     */
     Integer getColor(int x, int y) {
         return color.get(getElvalue(T, x, y));
     }
+
+    /**
+     * Get default color
+     * @return return color value
+     */
     Integer getDefaultColor() {
         return color.get(0);
     }
 
+    /**
+     * swap blocs
+     * @param x1 x - coordinate of bloc first
+     * @param y1 y - coordinate of bloc first
+     * @param x2 x - coordinate of block second
+     * @param y2 y - coordinate of bloc second
+     */
     void swap(int x1, int y1, int x2, int y2) {
         swap(T, x1, y1, x2, y2);
     }
 
+    /**
+     * Check that the field was changed
+     * @return true if the field was changed
+     */
     boolean isCange() {
         return isChange(T);
     }
+
+    /**
+     * Inform engine that we start reading data.
+     *
+     * lock data for reading
+     */
     public void startReading() {
         startReading(T);
     }
 
+    /** I
+     * nform engine that we finished reading.
+     * Unlock data.
+     */
     public void endReading() {
         endReading(T);
     }
+
+    /**
+     * Get count of blocks which was deleted
+     * @return count blocks which was deleted from previous reading field.
+     */
     public int getCount(){return getCount(T);}
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
