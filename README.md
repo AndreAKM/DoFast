@@ -31,6 +31,6 @@ h2 Technology
 ● Implemention of grphix base on [android.view.SurfaceView](https://developer.android.com/reference/android/view/SurfaceView)
 
 <hr>
-h2 Instalation
+h2 Installation
 
 ● Signed apk you can find in [app/release/app-release.apk](https://github.com/AndreAKM/DoFast/commit/b3a860e8fe651cfb65fccae2bf430934a5695944#diff-83f8f6ce566bd6ce67dd288b87e9f2b6)
