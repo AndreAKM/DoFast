@@ -53,11 +53,19 @@ public class DoFast extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.activity_game);
-        
-        T = createEngine(8, 5);
-    }
+        Display display = getWindowManager().getDefaultDisplay();
 
+        T = createEngine(8, 5);
+
+        int widht = display.getWidth();
+        int height = display.getHeight();
+        gameView= new GameView(this, widht, height);
+        setContentView(R.layout.activity_game);
+
+        LinearLayout surface = (LinearLayout)findViewById(R.id.middleSurface);
+        surface.addView(gameView);
+    }
+    GameView gameView = null;
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         JSONArray serialyze = new JSONArray();
@@ -76,13 +84,8 @@ public class DoFast extends AppCompatActivity {
     @Override
     protected void onResume () {
         super.onResume();
-        Display display = getWindowManager().getDefaultDisplay();
+        gameView.setDrawing(true);
 
-        int widht = display.getWidth();
-        int height = display.getHeight();
-        GameView gameView= new GameView(this, widht, height);
-        LinearLayout surface = (LinearLayout)findViewById(R.id.middleSurface);
-        surface.addView(gameView);
         //setContentView();
     }
 

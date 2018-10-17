@@ -40,13 +40,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         elCount = DoFast.FieldSize;
         screanH = i_screanH;
         screanW = i_screanW;
-        radius = (Math.min(screanH - shiftY, screanW - (2*shiftX)) /elCount) * elCount;
         int rad = (Math.min(screanH, screanW) );
+        step = rad / elCount;
+        shiftY = shiftX = (int) (rad / 30.8);
+
+        radius = (Math.min(screanH - shiftY, screanW - (2*shiftX)) /elCount) * elCount;
+        step = radius / elCount;
         borderRect = new Rect(0, 0, rad, rad);
-        int t =rad + 60;
-        currentCountBorderRect  = new Rect(80, t, (rad) - 80, t + 220);
-        t =currentCountBorderRect.bottom + 60;
-        bestCountBorderRect = new Rect(80, t, (rad - 80), t + 220);
+
+        float shift = (float) step;
+        int t = (int) (rad + shift);
+        highttext = step + shiftY * 2;
+
+        currentCountBorderRect  = new Rect((int)shift, t, (rad) - (int)shift, t + highttext);
+        t = highttext / 4 + currentCountBorderRect.bottom;
+        bestCountBorderRect = new Rect((int)shift, t, (rad - (int)shift), t + highttext);
         border = BitmapFactory.decodeResource(getResources(), R.drawable.border);
         background = BitmapFactory.decodeResource(
                 getResources(), R.drawable.background);
@@ -55,9 +63,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         init();
     }
 
+    public void setDrawing(boolean drawing) {
+        this.drawing = drawing;
+    }
+
     /**
      * parameters which describe the game layout
      */
+
+    int step;
+    int highttext;
     private int elCount = 8;
     private static int shiftX = 35;
     private static int shiftY = 35;
@@ -187,19 +202,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawBitmap(border, null , bestCountBorderRect, paint);
         Paint shadowPaint = new Paint();
         shadowPaint.setAntiAlias(true);
-        shadowPaint.setTextSize(200.0f);
-        shadowPaint.setStrokeWidth(20.0f);
+        shadowPaint.setTextSize(highttext);
+        shadowPaint.setStrokeWidth(highttext/10);
         shadowPaint.setStyle(Paint.Style.STROKE);
         shadowPaint.setShadowLayer(5.0f, 10.0f, 10.0f, Color.BLACK);
         shadowPaint.setColor(Color.MAGENTA);
 
         canvas.drawText(counter.getCurrentcount().toString(),
-                startOftext(currentCountBorderRect, counter.getCurrentcount().toString(), 100.0f),
-                currentCountBorderRect.bottom -40, shadowPaint);
+                startOftext(currentCountBorderRect, counter.getCurrentcount().toString(), highttext /2),
+                currentCountBorderRect.bottom -shiftY, shadowPaint);
         shadowPaint.setColor(Color.GREEN);
         canvas.drawText(counter.getBestResult().toString(),
-                startOftext(bestCountBorderRect, counter.getBestResult().toString(), 100.0f),
-                bestCountBorderRect.bottom - 40, shadowPaint);
+                startOftext(bestCountBorderRect, counter.getBestResult().toString(), highttext /2),
+                bestCountBorderRect.bottom - shiftY, shadowPaint);
     }
 
     /**
@@ -207,7 +222,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * @param canvas - canvas
      */
     void moveDrowing(Canvas canvas) {
-        int step = radius / 8;
         int x= idField(initX, shiftX);
         int y = idField(initY, shiftY);
         paint.setStyle(Paint.Style.FILL);
@@ -229,7 +243,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     void fieldDrowing(Canvas canvas) {
         
-        int step = radius / 8;
         main.startReading();
         for (int y = shiftY; y < radius; y += step){
             for (int x = shiftX; x < radius; x += step){
@@ -248,7 +261,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * @return return id of the block
      */
     int idField(float x, float shift) {
-        int step = radius / 8;
         return (int) ((x - shift)/step);
     }
 
