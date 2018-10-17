@@ -39,9 +39,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         border = BitmapFactory.decodeResource(getResources(), R.drawable.border);
         background = BitmapFactory.decodeResource(
                 getResources(), R.drawable.background);
-        prevCount = Calendar.getInstance().getTimeInMillis();
-        sharedPreferences = main.getSharedPreferences(main.GameName, Context.MODE_PRIVATE);
-        bestResult = sharedPreferences.getInt(BestResultSP,0);
+        counter =  new Counter();
         init();
     }
     private int elCount = 8;
@@ -77,46 +75,64 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
         if (isDrawing()) {
             fieldDrowing(canvas);
-            counting();
+            counter.counting();
             drawing = false;
         }
     }
+    Counter counter = null;
+    class Counter {
+        private Integer count = new Integer(0);
+        private static final String BestResultSP = "BEST-RESULT";
+        SharedPreferences sharedPreferences;
 
-    Integer count = new Integer(0);
-    Integer bestResult = new Integer(0);
-    Integer currentcount = new Integer(0);
-
-    List<Float> lastMinResults = new ArrayList<>();
-    float summ = 0.f;
-    private static final String BestResultSP = "BEST-RESULT";
-    SharedPreferences sharedPreferences;
-    long prevCount;
-    void counting() {
-        if(main.getCount() == 0) return;
-
-        synchronized (count) {
-            long ct = Calendar.getInstance().getTimeInMillis();
-            long interval = (ct - prevCount) / 1000;
-            count += main.getCount();
-            if (interval < 1) return;
-            float current = ((float)(count) / interval);
-            Log.d(TAG, String.format("Counter: count %d, interval %d, curent %f, sum %f, collect size %d", count, interval, current, summ, lastMinResults.size()));
-            lastMinResults.add(current);
-            summ += current;
-            count = 0;
-            prevCount = ct;
-            currentcount = (int)summ;
-            if(lastMinResults.size() >= 15) {
-                summ -= lastMinResults.remove(0);
-            }
-            if (bestResult < currentcount) {
-                bestResult = currentcount;
-                SharedPreferences.Editor e = sharedPreferences.edit();
-                e.putInt(BestResultSP, bestResult);
-                e.apply();
-            }
+        public Counter() {
+            prevCount = Calendar.getInstance().getTimeInMillis();
+            sharedPreferences = main.getSharedPreferences(main.GameName, Context.MODE_PRIVATE);
+            bestResult = sharedPreferences.getInt(BestResultSP,0);
         }
 
+        public Integer getBestResult() {
+            return bestResult;
+        }
+
+        public Integer getCurrentcount() {
+            return currentcount;
+        }
+
+        private Integer bestResult = new Integer(0);
+        private Integer currentcount = new Integer(0);
+
+        private List<Float> lastMinResults = new ArrayList<>();
+        private float summ = 0.f;
+        private long prevCount;
+
+        public void counting() {
+            if (main.getCount() == 0) return;
+
+            synchronized (count) {
+                long ct = Calendar.getInstance().getTimeInMillis();
+                long interval = (ct - prevCount) / 1000;
+                count += main.getCount();
+                if (interval < 1) return;
+                float current = ((float) (count) / interval);
+                Log.d(TAG, String.format("Counter: count %d, interval %d, curent %f, sum %f, collect size %d", count, interval, current, summ, lastMinResults.size()));
+                lastMinResults.add(current);
+                summ += current;
+                count = 0;
+                prevCount = ct;
+                currentcount = (int) summ;
+                if (lastMinResults.size() >= 15) {
+                    summ -= lastMinResults.remove(0);
+                }
+                if (bestResult < currentcount) {
+                    bestResult = currentcount;
+                    SharedPreferences.Editor e = sharedPreferences.edit();
+                    e.putInt(BestResultSP, bestResult);
+                    e.apply();
+                }
+            }
+
+        }
     }
     float startOftext(Rect rec, String coutS, float sizeS) {
         float center = (rec.right + rec.left)/2;
@@ -135,12 +151,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         shadowPaint.setShadowLayer(5.0f, 10.0f, 10.0f, Color.BLACK);
         shadowPaint.setColor(Color.MAGENTA);
 
-        canvas.drawText(currentcount.toString(),
-                startOftext(currentCountBorderRect, currentcount.toString(), 100.0f),
+        canvas.drawText(counter.getCurrentcount().toString(),
+                startOftext(currentCountBorderRect, counter.getCurrentcount().toString(), 100.0f),
                 currentCountBorderRect.bottom -40, shadowPaint);
         shadowPaint.setColor(Color.GREEN);
-        canvas.drawText(bestResult.toString(),
-                startOftext(bestCountBorderRect, bestResult.toString(), 100.0f),
+        canvas.drawText(counter.getBestResult().toString(),
+                startOftext(bestCountBorderRect, counter.getBestResult().toString(), 100.0f),
                 bestCountBorderRect.bottom - 40, shadowPaint);
     }
 
