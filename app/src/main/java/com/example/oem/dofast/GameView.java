@@ -50,6 +50,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         border = BitmapFactory.decodeResource(getResources(), R.drawable.border);
         background = BitmapFactory.decodeResource(
                 getResources(), R.drawable.background);
+        fullScreanRect = new Rect(0, 0, screanW, screanH);
         counter =  new Counter();
         init();
     }
@@ -74,6 +75,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     Rect borderRect;
     Rect currentCountBorderRect;
     Rect bestCountBorderRect;
+    Rect fullScreanRect;
 
     /**
      * check should draw the game field
@@ -179,7 +181,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * @param canvas - canvas
      */
     void backgroundDrowing(Canvas canvas){
-        canvas.drawBitmap(background, 0 , 0, paint);
+        canvas.drawBitmap(background,null , fullScreanRect, paint);
         canvas.drawBitmap(border, null , borderRect, paint);
         canvas.drawBitmap(border, null , currentCountBorderRect, paint);
         canvas.drawBitmap(border, null , bestCountBorderRect, paint);
