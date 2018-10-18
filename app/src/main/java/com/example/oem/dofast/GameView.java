@@ -47,15 +47,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         radius = (Math.min(screanH - shiftY, screanW - (2*shiftX)) /elCount) * elCount;
         step = radius / elCount;
-        borderRect = new Rect(0, 0, rad, rad);
-
-        float shift = (float) step;
-        int t = (int) (rad + shift);
         highttext = step + shiftY * 2;
+        int interval = highttext / 4;
+        int shift = step;
 
-        currentCountBorderRect  = new Rect((int)shift, t, (rad) - (int)shift, t + highttext);
-        t = highttext / 4 + currentCountBorderRect.bottom;
-        bestCountBorderRect = new Rect((int)shift, t, (rad - (int)shift), t + highttext);
+        targetBorderRect = new Rect(shift / 2, interval, rad -  shift / 2, interval + highttext);
+
+        int t = targetBorderRect.bottom + interval;
+
+        gameFieldborderRect = new Rect(0, t, rad, rad + t);
+        t = gameFieldborderRect.bottom + interval;
+        currentCountBorderRect  = new Rect(shift, t, rad - shift, t + highttext);
+        t = interval + currentCountBorderRect.bottom;
+        bestCountBorderRect = new Rect(shift, t, rad - shift, t + highttext);
         border = BitmapFactory.decodeResource(getResources(), R.drawable.border);
         background = BitmapFactory.decodeResource(
                 getResources(), R.drawable.background);
@@ -88,7 +92,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     Bitmap border;
     Bitmap background;
-    Rect borderRect;
+    Rect gameFieldborderRect;
+    Rect targetBorderRect;
     Rect currentCountBorderRect;
     Rect bestCountBorderRect;
     Rect fullScreanRect;
@@ -103,7 +108,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     protected void onDraw(Canvas canvas) {
         // super.onDraw(canvas);
         if(mooving||isDrawing()){
-            backgroundDrowing(canvas);
+            backgroundDraw(canvas);
         }
         if(mooving) {
             fieldDrowing(canvas);
@@ -138,17 +143,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * drowing all static layout elements
      * @param canvas - canvas
      */
-    void backgroundDrowing(Canvas canvas){
+    void backgroundDraw(Canvas canvas){
         canvas.drawBitmap(background,null , fullScreanRect, paint);
-        canvas.drawBitmap(border, null , borderRect, paint);
+        canvas.drawBitmap(border, null , gameFieldborderRect, paint);
         canvas.drawBitmap(border, null , currentCountBorderRect, paint);
         canvas.drawBitmap(border, null , bestCountBorderRect, paint);
+
         Paint shadowPaint = new Paint();
         shadowPaint.setAntiAlias(true);
         shadowPaint.setTextSize(highttext);
         shadowPaint.setStrokeWidth(highttext/10);
         shadowPaint.setStyle(Paint.Style.STROKE);
         shadowPaint.setShadowLayer(5.0f, 10.0f, 10.0f, Color.BLACK);
+        targetDraw(canvas, shadowPaint);
         shadowPaint.setColor(counter.currentCounterColore);
 
         canvas.drawText(counter.getCurrentcount().toString(),
@@ -161,16 +168,39 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     /**
+     * Draw some hints for user
+     * @param canvas - canvas
+     */
+    void targetDraw(Canvas canvas, Paint textPaint) {
+        canvas.drawBitmap(border, null , targetBorderRect, paint);
+        int y = targetBorderRect.top + shiftY;
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.GREEN);
+        int start = targetBorderRect.left + shiftX;
+
+        for (int x = start, count = 0; count < 3; x += step * 2, ++count) {
+            canvas.drawRect(x, y, x + step, y + step, paint);
+        }
+        textPaint.setColor(Color.MAGENTA);
+        canvas.drawText("+", start + step ,targetBorderRect.bottom -shiftY, textPaint);
+        canvas.drawText("+", start + step * 3,targetBorderRect.bottom -shiftY, textPaint);
+        canvas.drawText("=", start + step * 5,targetBorderRect.bottom -shiftY, textPaint);
+        Rect r = new Rect (start + step * 6, targetBorderRect.top, start + step * 7, targetBorderRect.bottom);
+        canvas.drawBitmap(BitmapFactory.decodeResource(
+                getResources(), R.drawable.golden_cup),null , r, new Paint());
+    }
+
+    /**
      * draw flying block which follows to user finger
      * @param canvas - canvas
      */
     void moveDrowing(Canvas canvas) {
-        int x= idField(initX, shiftX);
-        int y = idField(initY, shiftY);
+        int x= idFieldX(initX);
+        int y = idFieldY(initY);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(main.getDefaultColor());
-        float xx = shiftX + x*step;
-        float yy = shiftY + y*step;
+        float xx = shiftX + gameFieldborderRect.left + x*step;
+        float yy = shiftY + gameFieldborderRect.top + y*step;
         canvas.drawRect(xx, yy, xx + step, yy + step, paint);
         float x1 = endX - (step/2);
         float y1 = endY - (step/2);
@@ -187,10 +217,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     void fieldDrowing(Canvas canvas) {
         
         main.startReading();
-        for (int y = shiftY; y < radius; y += step){
-            for (int x = shiftX; x < radius; x += step){
-                paint.setStyle(Paint.Style.FILL);
-                paint.setColor(main.getColor(x / step, y / step));
+        paint.setStyle(Paint.Style.FILL);
+        for (int y = gameFieldborderRect.top + shiftY; y < gameFieldborderRect.top + radius; y += step){
+            for (int x = gameFieldborderRect.left + shiftX; x < gameFieldborderRect.left + radius; x += step){
+                paint.setColor(main.getColor(idFieldX(x), idFieldY(y)));
                 canvas.drawRect(x, y, x + step, y + step, paint);
             }
         }
@@ -203,18 +233,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * @param shift - start shifting of the game field
      * @return return id of the block
      */
-    int idField(float x, float shift) {
-        return (int) ((x - shift)/step);
+    int idFieldX(float x) {
+        return (int) ((x - shiftX - gameFieldborderRect.left)/step);
     }
-
+    int idFieldY(float x) {
+        return (int) ((x - shiftY - gameFieldborderRect.top)/step);
+    }
     /**
      * swap first and last touched blocs
      */
     void swap() {
-        int x1= idField(initX, shiftX);
-        int y1 = idField(initY, shiftY);
-        int x2 = idField(endX, shiftX);
-        int y2 = idField(endY, shiftY);
+        int x1= idFieldX(initX);
+        int y1 = idFieldY(initY);
+        int x2 = idFieldX(endX);
+        int y2 = idFieldY(endY);
 
         if(x2 < x1) x2 = x1 - 1;
         if(x2 > x1) x2 = x1 + 1;
@@ -229,7 +261,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
-        if(borderRect.contains((int)x, (int)y) == false) {
+        if(gameFieldborderRect.contains((int)x, (int)y) == false) {
             mooving = false;
             drawing = true;
             return true;
