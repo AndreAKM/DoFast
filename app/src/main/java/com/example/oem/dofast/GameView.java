@@ -140,12 +140,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         private Integer bestResult = null;
+        public int currentCounterColore = Color.YELLOW;
         private Integer currentcount = new Integer(0);
 
         private List<Float> lastMinResults = new ArrayList<>();
         private float summ = 0.f;
         private long prevCount;
-
+        private float timeInterval = 0.f;
         /**
          * counting play results
          * counting how mach block player could deleted during last 15 seconds
@@ -157,15 +158,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 long ct = Calendar.getInstance().getTimeInMillis();
                 long interval = (ct - prevCount) / 1000;
                 count += main.getCount();
-                if (interval < 1) return;
-                float current = ((float) (count) / interval);
+                if (interval < 1) {
+                    currentcount = (int) count;
+                    return;
+                }
+                currentCounterColore = Color.CYAN;
+                timeInterval += interval;
+                float current = count;//((float) (count) / interval);
                 Log.d(TAG, String.format("Counter: count %d, interval %d, curent %f, sum %f, collect size %d", count, interval, current, summ, lastMinResults.size()));
                 lastMinResults.add(current);
                 summ += current;
                 count = 0;
                 prevCount = ct;
-                currentcount = (int) summ;
+                currentcount = (int) (summ * lastMinResults.size() / timeInterval) ;
                 if (lastMinResults.size() >= 15) {
+                    currentCounterColore = Color.MAGENTA;
                     summ -= lastMinResults.remove(0);
                 }
                 if (bestResult < currentcount) {
@@ -206,7 +213,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         shadowPaint.setStrokeWidth(highttext/10);
         shadowPaint.setStyle(Paint.Style.STROKE);
         shadowPaint.setShadowLayer(5.0f, 10.0f, 10.0f, Color.BLACK);
-        shadowPaint.setColor(Color.MAGENTA);
+        shadowPaint.setColor(counter.currentCounterColore);
 
         canvas.drawText(counter.getCurrentcount().toString(),
                 startOftext(currentCountBorderRect, counter.getCurrentcount().toString(), highttext /2),
