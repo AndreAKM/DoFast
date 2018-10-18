@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -143,7 +144,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         public int currentCounterColore = Color.YELLOW;
         private Integer currentcount = new Integer(0);
 
-        private List<Float> lastMinResults = new ArrayList<>();
+        private List<Pair<Float,Float>> lastMinResults = new ArrayList<>();
         private float summ = 0.f;
         private long prevCount;
         private float timeInterval = 0.f;
@@ -156,24 +157,28 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
             synchronized (count) {
                 long ct = Calendar.getInstance().getTimeInMillis();
-                long interval = (ct - prevCount) / 1000;
+                float interval = (ct - prevCount) / 1000;
                 count += main.getCount();
-                if (interval < 1) {
+                if (interval < 1.f) {
                     currentcount = (int) count;
+                    Log.d(TAG, String.format("Counter: count %d, interval %f, sum %f, collect size %d", count, interval, summ, lastMinResults.size()));
+
                     return;
                 }
                 currentCounterColore = Color.CYAN;
                 timeInterval += interval;
                 float current = count;//((float) (count) / interval);
-                Log.d(TAG, String.format("Counter: count %d, interval %d, curent %f, sum %f, collect size %d", count, interval, current, summ, lastMinResults.size()));
-                lastMinResults.add(current);
+                lastMinResults.add(new Pair<>(interval, current));
                 summ += current;
-                count = 0;
                 prevCount = ct;
                 currentcount = (int) (summ * lastMinResults.size() / timeInterval) ;
+                Log.d(TAG, String.format("Counter: count %d, interval %f, curent %d sum %f, collect size %d", count, timeInterval, currentcount, summ, lastMinResults.size()));
+                count = 0;
                 if (lastMinResults.size() >= 15) {
                     currentCounterColore = Color.MAGENTA;
-                    summ -= lastMinResults.remove(0);
+                    Pair<Float, Float> el = lastMinResults.remove(0);
+                    timeInterval -= (float)el.first;
+                    summ -= (float)el.second;
                     if (bestResult < currentcount) {
                         bestResult = currentcount;
                         SharedPreferences.Editor e = sharedPreferences.edit();
