@@ -286,12 +286,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
-        if(borderRect.contains((int)x, (int)y) == false)
+        if(borderRect.contains((int)x, (int)y) == false) {
+            mooving = false;
+            drawing = true;
             return true;
+        }
         if (action == MotionEvent.ACTION_MOVE) {
             endX = x;
             endY = y;
-            mooving = true;
+            if(Math.abs(endX - initX) > 2 *step || Math.abs(endY - initY) > 2 *step) {
+                mooving = false;
+                drawing = true;
+                swap();
+            } else mooving = true;
         } else if (action == MotionEvent.ACTION_DOWN) {
             initX = x;
             initY = y;
