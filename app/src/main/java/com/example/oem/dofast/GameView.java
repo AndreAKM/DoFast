@@ -174,13 +174,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 if (lastMinResults.size() >= 15) {
                     currentCounterColore = Color.MAGENTA;
                     summ -= lastMinResults.remove(0);
+                    if (bestResult < currentcount) {
+                        bestResult = currentcount;
+                        SharedPreferences.Editor e = sharedPreferences.edit();
+                        e.putInt(BestResultSP, bestResult);
+                        e.apply();
+                    }
                 }
-                if (bestResult < currentcount) {
-                    bestResult = currentcount;
-                    SharedPreferences.Editor e = sharedPreferences.edit();
-                    e.putInt(BestResultSP, bestResult);
-                    e.apply();
-                }
+
             }
 
         }
