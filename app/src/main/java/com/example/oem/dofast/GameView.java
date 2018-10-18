@@ -171,7 +171,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 lastMinResults.add(new Pair<>(interval, current));
                 summ += current;
                 prevCount = ct;
-                currentcount = (int) (summ * lastMinResults.size() / timeInterval) ;
+                currentcount = (int) (summ * 60 /timeInterval) ;
                 Log.d(TAG, String.format("Counter: count %d, interval %f, curent %d sum %f, collect size %d", count, timeInterval, currentcount, summ, lastMinResults.size()));
                 count = 0;
                 if (lastMinResults.size() >= 15) {
