@@ -35,7 +35,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * @param i_screanW screen width
      * @param i_screanH screen height
      */
-    public GameView(Context context,int i_screanW, int i_screanH) {
+    public GameView(Context context,int i_screanW, int i_screanH, Counter counter) {
         super(context);
         main = (DoFast) context;
         elCount = DoFast.FieldSize;
@@ -60,7 +60,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         background = BitmapFactory.decodeResource(
                 getResources(), R.drawable.background);
         fullScreanRect = new Rect(0, 0, screanW, screanH);
-        counter =  new Counter();
+        this.counter =  counter;
         init();
     }
 
@@ -120,81 +120,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     /**
      * class counter
      */
-    class Counter {
 
-        private Integer count = new Integer(0);
-        private static final String BestResultSP = "BEST-RESULT";
-        private SharedPreferences sharedPreferences;
-
-        public Counter() {
-            prevCount = Calendar.getInstance().getTimeInMillis();
-            sharedPreferences = main.getSharedPreferences(DoFast.GameName, Context.MODE_PRIVATE);
-            bestResult = sharedPreferences.getInt(BestResultSP,0);
-        }
-
-        public Integer getBestResult() {
-            return bestResult;
-        }
-
-        public Integer getCurrentcount() {
-            return currentcount;
-        }
-
-        private Integer bestResult = null;
-        public int currentCounterColore = Color.YELLOW;
-        private Integer currentcount = new Integer(0);
-
-        private List<Pair<Float,Float>> lastMinResults = new ArrayList<>();
-        private float summ = 0.f;
-        private long prevCount;
-        private float timeInterval = 0.f;
-
-        /**
-         * counting play results
-         * counting how mach block player could deleted during last 15 seconds
-         */
-        public void counting() {
-            synchronized (count) {
-                long ct = Calendar.getInstance().getTimeInMillis();
-                float interval = (ct - prevCount) / 1000;
-
-                if (interval > 30) {
-                    count = 0;
-                    prevCount = ct;
-                    return;
-                }
-                if (main.getCount() == 0) return;
-                count += main.getCount();
-                if (interval < 1.f) {
-                    return;
-                }
-
-                currentCounterColore = Color.CYAN;
-                timeInterval += interval;
-                float current = count;//((float) (count) / interval);
-                lastMinResults.add(new Pair<>(interval, current));
-                summ += current;
-                prevCount = ct;
-                currentcount = (int) (summ * 60 /timeInterval) ;
-                Log.d(TAG, String.format("Counter: count %d, interval %f, curent %d sum %f, collect size %d", count, timeInterval, currentcount, summ, lastMinResults.size()));
-                count = 0;
-                if (lastMinResults.size() >= 15) {
-                    currentCounterColore = Color.MAGENTA;
-                    Pair<Float, Float> el = lastMinResults.remove(0);
-                    timeInterval -= (float)el.first;
-                    summ -= (float)el.second;
-                    if (bestResult < currentcount) {
-                        bestResult = currentcount;
-                        SharedPreferences.Editor e = sharedPreferences.edit();
-                        e.putInt(BestResultSP, bestResult);
-                        e.apply();
-                    }
-                }
-
-            }
-
-        }
-    }
 
     /**
      * Calculate x coordinate to start printing text. It's used to position text in center of border

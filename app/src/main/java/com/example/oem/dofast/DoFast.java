@@ -5,9 +5,12 @@
 
 package com.example.oem.dofast;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Display;
 import android.support.v7.app.AppCompatActivity;
@@ -45,10 +48,11 @@ public class DoFast extends AppCompatActivity {
     public static final int ColorCount = 5; //! <count of blocks color variants
 
     private static final String FieldState = "FieldState"; //! <
-
+    private static final String CounterState = "CounterState";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -59,15 +63,23 @@ public class DoFast extends AppCompatActivity {
 
         int widht = display.getWidth();
         int height = display.getHeight();
-        gameView= new GameView(this, widht, height);
+        sharedPreferences = getSharedPreferences(GameName, Context.MODE_PRIVATE);
+        counter = new Counter(this);
+        restore();
+        gameView= new GameView(this, widht, height, counter);
         setContentView(R.layout.activity_game);
 
         LinearLayout surface = (LinearLayout)findViewById(R.id.middleSurface);
         surface.addView(gameView);
     }
+
+    SharedPreferences sharedPreferences = null;
     GameView gameView = null;
+    Counter counter = null;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState");
         JSONArray serialyze = new JSONArray();
         startReading();
         for (int x = 0; x < 8; ++x) {
@@ -77,30 +89,28 @@ public class DoFast extends AppCompatActivity {
             }
             serialyze.put(row);
         }
-        outState.putString(FieldState, serialyze.toString());
+        Log.d(TAG, "save state");
+        SharedPreferences.Editor e = sharedPreferences.edit();
+        e.putString(FieldState, serialyze.toString());
+        e.putString(CounterState, counter.saveState());
+        e.apply();
         super.onSaveInstanceState(outState);
     }
-
+    
     @Override
     protected void onResume () {
         super.onResume();
         gameView.setDrawing(true);
 
-        //setContentView();
+        Log.d(TAG, "onResume");
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle state) {
-        super.onRestoreInstanceState(state);
-        Log.d(TAG, "onRestoreInstanceState");
-        String fss = state.getString(FieldState);
-        if (fss != null) {
+   protected void restore() {
+        Log.d(TAG, "restore");
+        String fss = sharedPreferences.getString(FieldState, "");
+        if (fss.isEmpty() == false) {
             Log.d(TAG, "onRestoreInstanceState fss: " + fss);
             try {
-                if (T == 0) {
-                    Log.d(TAG, "onRestoreInstanceState create Engine ");
-                    T = createEngine(FieldSize, ColorCount);
-                }
                 startChanging(T);
                 JSONArray serialyze = new JSONArray(fss);
                 for (int x = 0; x < 8; ++x) {
@@ -115,7 +125,9 @@ public class DoFast extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        counter.loadState(sharedPreferences.getString(CounterState,""));
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
