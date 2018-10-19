@@ -148,23 +148,27 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         private float summ = 0.f;
         private long prevCount;
         private float timeInterval = 0.f;
+
         /**
          * counting play results
          * counting how mach block player could deleted during last 15 seconds
          */
         public void counting() {
-            if (main.getCount() == 0) return;
-
             synchronized (count) {
                 long ct = Calendar.getInstance().getTimeInMillis();
                 float interval = (ct - prevCount) / 1000;
-                count += main.getCount();
-                if (interval < 1.f) {
-                    currentcount = (int) count;
-                    Log.d(TAG, String.format("Counter: count %d, interval %f, sum %f, collect size %d", count, interval, summ, lastMinResults.size()));
 
+                if (interval > 30) {
+                    count = 0;
+                    prevCount = ct;
                     return;
                 }
+                if (main.getCount() == 0) return;
+                count += main.getCount();
+                if (interval < 1.f) {
+                    return;
+                }
+
                 currentCounterColore = Color.CYAN;
                 timeInterval += interval;
                 float current = count;//((float) (count) / interval);
