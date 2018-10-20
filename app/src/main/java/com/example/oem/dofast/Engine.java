@@ -17,8 +17,8 @@ import java.util.List;
 public class Engine {
     private static final String TAG = Engine.class.getName();
 
-    public Engine(int fieldSize, int elCount) {
-        T = createEngine(fieldSize, elCount);
+    public Engine(int fieldSize, int elCount, int SequentialSize) {
+        T = createEngine(fieldSize, elCount, SequentialSize);
     }
 
     @Override
@@ -89,6 +89,8 @@ public class Engine {
      * @return return color value
      */
     Integer getColor(int x, int y) {
+        int id = getElvalue(T, x, y);
+        Log.d(TAG, String.format("(%d, %d) - %d",x,y,id));
         return color.get(getElvalue(T, x, y));
     }
 
@@ -162,7 +164,7 @@ public class Engine {
         endChanging(T);
     }
 
-    private native long createEngine(int fieldSize, int elCount);
+    private native long createEngine(int fieldSize, int elCount, int SequentialSize);
     private native void destry(long T);
     private native int getElvalue(long T, int x, int y);
     private native void swap(long T, int x1, int y1, int x2, int y2);
@@ -174,4 +176,8 @@ public class Engine {
     private native void setElvalue(long T, int x, int y, int value);
     private native int getCount(long T);
 
+    private native int getNewTask(long T);
+    private native int getTaskValue(long T, int id);
+    private native boolean isDone(long T);
+    private native boolean isFinish(long T);
 }

@@ -28,7 +28,8 @@ void EqualWiner::refrashe(){
 
 int EqualWiner::checkEl(int x, int y) {
 
-    if(field_.getValue(x,y) == 0) return 0;
+
+    if(field->getValue(x,y) == 0) return 0;
     int startx = 0;//std::max(x - sizeSequence_, 0);
     int maxx = fSizeX_;//std::min(x + sizeSequence_ + 1, fSizeX_);
     int starty = 0;//std::max(y - sizeSequence_, 0);
@@ -36,29 +37,29 @@ int EqualWiner::checkEl(int x, int y) {
     int xCount = 1;
     int i = x, j = x;
     for ( ; i > startx ; --i) {
-        if(field_.getValue(i,y) != field_.getValue(i - 1,y)) break;
+        if(field->getValue(i,y) != field->getValue(i - 1,y)) break;
         ++xCount;
     }
     for ( ; j < maxx - 1; ++j) {
-        if(field_.getValue(j,y) != field_.getValue(j + 1,y)) break;
+        if(field->getValue(j,y) != field->getValue(j + 1,y)) break;
         ++xCount;
     }
 
     int yCount = 1;
     int iy = y, jy = y;
     for ( ; iy > starty; --iy) {
-        if(field_.getValue(x,iy) != field_.getValue(x,iy - 1)) break;
+        if(field->getValue(x,iy) != field->getValue(x,iy - 1)) break;
         ++yCount;
     }
     for ( ; jy < maxy - 1 ; ++jy) {
-        if(field_.getValue(x,jy) != field_.getValue(x,jy + 1)) break;
+        if(field->getValue(x,jy) != field->getValue(x,jy + 1)) break;
         ++yCount;
     }
     if (xCount >= sizeSequence_) {
         int bx = std::max(i, startx);
         int ex = std::min(j + 1, maxx);
         for(int c = bx; c != ex; ++c) {
-            field_.claenValue(c, y);
+            field->claenValue(c, y);
         }
         changeRange.push_back(std::make_tuple(bx, y, ex, y +1));
     }
@@ -69,7 +70,7 @@ int EqualWiner::checkEl(int x, int y) {
         int by = std::max(iy, starty);
         int ey = std::min(jy + 1, maxy);
         for(int c = by; c != ey; ++c) {
-            field_.claenValue(x, c);
+            field->claenValue(x, c);
         }
         changeRange.push_back(std::make_tuple(x, by, x + 1, ey));
     } else {

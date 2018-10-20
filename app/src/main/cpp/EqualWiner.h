@@ -9,6 +9,7 @@
 #include <tuple>
 #include <list>
 #include "Field.h"
+#include <memory>
 /**
  * @class EqualWiner definition game rule then player win if he can collect sizeSequence blocks
  *  with the same value in a row and/or column.
@@ -18,7 +19,7 @@ class EqualWiner {
     /**
      * general settings
      */
-    Field& field_; //! reference to game field
+    std::shared_ptr<Field> field; //! reference to game field
     const int fSizeX_;
     const int fSizeY_;
     const int sizeSequence_;
@@ -34,8 +35,8 @@ public:
      * @param fSizeY - height of game field
      * @param sizeSequence - count of tha same block which need to win
      */
-    EqualWiner(Field& field, int fSizeX, int fSizeY, int sizeSequence):
-            field_(field), fSizeX_(fSizeX), fSizeY_(fSizeY), sizeSequence_(sizeSequence){
+    EqualWiner(std::shared_ptr<Field> field, int fSizeX, int fSizeY, int sizeSequence):
+            field(field), fSizeX_(fSizeX), fSizeY_(fSizeY), sizeSequence_(sizeSequence){
     }
 
     /**
