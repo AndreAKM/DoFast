@@ -102,7 +102,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * check should draw the game field
      * @return true if the field should be re drown
      */
-    boolean isDrawing() { return drawing||main.isCange();}
+    boolean isDrawing() { return drawing||main.engine.isCange();}
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -198,14 +198,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         int x= idFieldX(initX);
         int y = idFieldY(initY);
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(main.getDefaultColor());
+        paint.setColor(main.engine.getDefaultColor());
         float xx = shiftX + gameFieldborderRect.left + x*step;
         float yy = shiftY + gameFieldborderRect.top + y*step;
         canvas.drawRect(xx, yy, xx + step, yy + step, paint);
         float x1 = endX - (step/2);
         float y1 = endY - (step/2);
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(main.getColor(x , y));
+        paint.setColor(main.engine.getColor(x , y));
         canvas.drawRect(x1, y1, x1 + step, y1 + step, paint);
 
     }
@@ -216,21 +216,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     void fieldDrowing(Canvas canvas) {
         
-        main.startReading();
+        main.engine.startReading();
         paint.setStyle(Paint.Style.FILL);
         for (int y = gameFieldborderRect.top + shiftY; y < gameFieldborderRect.top + radius; y += step){
             for (int x = gameFieldborderRect.left + shiftX; x < gameFieldborderRect.left + radius; x += step){
-                paint.setColor(main.getColor(idFieldX(x), idFieldY(y)));
+                paint.setColor(main.engine.getColor(idFieldX(x), idFieldY(y)));
                 canvas.drawRect(x, y, x + step, y + step, paint);
             }
         }
-        main.endReading();
+        main.engine.endReading();
     }
 
     /**
      * get id of block from screen coordinate
      * @param x - screen coordinate
-     * @param shift - start shifting of the game field
      * @return return id of the block
      */
     int idFieldX(float x) {
@@ -252,7 +251,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if(x2 > x1) x2 = x1 + 1;
         if(y2 < y1) y2 = y1 - 1;
         if(y2 > y1) y2 = y1 + 1;
-        main.swap(x1, y1, x2, y2);
+        main.engine.swap(x1, y1, x2, y2);
     }
 
     @Override

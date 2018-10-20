@@ -125,8 +125,8 @@ class Counter {
                 prevCount = ct;
                 return;
             }
-            if (main.getCount() == 0) return;
-            count += main.getCount();
+            if (main.engine.getCount() == 0) return;
+            count += main.engine.getCount();
             if (interval < 1.f) {
                 return;
             }
