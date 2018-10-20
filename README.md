@@ -21,7 +21,7 @@ objects  are  removed  from  the  game
 positioned  above  the  removed  ones  falls  down  to  take  their  place  and  new  objects  falls  
 in  from  the  top  to  fill  the  board.  
 
-●   The game counts how mach blocks you can remuved during last 15 secunds.
+●   The game fix maximum speed of play. The speed is measured in blocks which you can remuve per 1 minute.
 
 <hr>
 ## Technology
