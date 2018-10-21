@@ -247,11 +247,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         int y1 = idFieldY(initY);
         int x2 = idFieldX(endX);
         int y2 = idFieldY(endY);
-
-        if(x2 < x1) x2 = x1 - 1;
-        if(x2 > x1) x2 = x1 + 1;
-        if(y2 < y1) y2 = y1 - 1;
-        if(y2 > y1) y2 = y1 + 1;
+        float changeX = Math.abs(endX - initX);
+        float changeY = Math.abs(endY - initY);
+        if(changeX > changeY) {
+            if (x2 < x1) x2 = x1 - 1;
+            if (x2 > x1) x2 = x1 + 1;
+            y2 = y1;
+        } else if(changeX < changeY) {
+            if (y2 < y1) y2 = y1 - 1;
+            if (y2 > y1) y2 = y1 + 1;
+            x2 = x1;
+        }
+        else {
+            return;
+        }
         main.engine.swap(x1, y1, x2, y2);
     }
 
