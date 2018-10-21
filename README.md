@@ -23,6 +23,8 @@ in  from  the  top  to  fill  the  board.
 
 ●   The game fix maximum speed of play. The speed is measured in blocks which you can remuve per 1 minute.
 
+●   The Game sometimes generate added tasks for a player. If the player has done some tasks he got some added points for his game rezult.
+
 <hr>
 ## Technology
 
