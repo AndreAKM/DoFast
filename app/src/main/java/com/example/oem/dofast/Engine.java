@@ -156,13 +156,32 @@ public class Engine {
     public void setElvalue(int x, int y, int anInt) {
         setElvalue(T, x, y, anInt);
     }
-    private int getElvalue(int x, int y) {
+    public int getElvalue(int x, int y) {
         return getElvalue(T, x, y);
     }
 
-    private void endChanging() {
+    public void endChanging() {
         endChanging(T);
     }
+    public void getNewTask() {
+        getNewTask(T);
+    }
+    public int getTaskCount() {
+        return getTaskCount(T);
+    }
+    public boolean isDone() {
+        return isDone(T);
+    }
+    public boolean isFinish() {
+        return isFinish(T);
+    }
+    public int getTargetSequentSize() {
+        return getTargetSequentSize(T);
+    }
+    public int getTargetColor() {
+        return color.get(getTargetIdValue(T));
+    }
+
 
     private native long createEngine(int fieldSize, int elCount, int SequentialSize);
     private native void destry(long T);
@@ -176,8 +195,10 @@ public class Engine {
     private native void setElvalue(long T, int x, int y, int value);
     private native int getCount(long T);
 
-    private native int getNewTask(long T);
-    private native int getTaskValue(long T, int id);
+    private native int getTargetSequentSize(long T);
+    private native int getTargetIdValue(long T);
+    private native void getNewTask(long T);
+    private native int getTaskCount(long T);
     private native boolean isDone(long T);
     private native boolean isFinish(long T);
 }

@@ -6,22 +6,16 @@
 package com.example.oem.dofast;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 /**
  * Class of the game view
@@ -171,23 +165,29 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * Draw some hints for user
      * @param canvas - canvas
      */
+    void targetWinerDraw(Canvas canvas) {
+        if(main.engine.isDone() == false) return;
+        int centr = screanW / 2;
+        targetBorderRect.left = centr - step / 2;
+        targetBorderRect.right = centr + step / 2;
+        canvas.drawBitmap(BitmapFactory.decodeResource(
+                getResources(), R.drawable.golden_cup),null , targetBorderRect, new Paint());
+    }
+
     void targetDraw(Canvas canvas, Paint textPaint) {
-        canvas.drawBitmap(border, null , targetBorderRect, paint);
+        if(main.engine.isFinish() == true) {
+            targetWinerDraw(canvas);
+            return;
+        }
+        int widhtTarget = main.engine.getTargetSequentSize() * (step + shiftX) - shiftX;
         int y = targetBorderRect.top + shiftY;
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.GREEN);
-        int start = targetBorderRect.left + shiftX;
-
-        for (int x = start, count = 0; count < 3; x += step * 2, ++count) {
+        int centr = screanW / 2;
+        int start = centr - widhtTarget / 2;
+        for (int x = start, count = 0; count < main.engine.getTargetSequentSize(); x += step + shiftX, ++count) {
+            paint.setColor(main.engine.getTargetColor());
             canvas.drawRect(x, y, x + step, y + step, paint);
         }
-        textPaint.setColor(Color.MAGENTA);
-        canvas.drawText("+", start + step ,targetBorderRect.bottom -shiftY, textPaint);
-        canvas.drawText("+", start + step * 3,targetBorderRect.bottom -shiftY, textPaint);
-        canvas.drawText("=", start + step * 5,targetBorderRect.bottom -shiftY, textPaint);
-        Rect r = new Rect (start + step * 6, targetBorderRect.top, start + step * 7, targetBorderRect.bottom);
-        canvas.drawBitmap(BitmapFactory.decodeResource(
-                getResources(), R.drawable.golden_cup),null , r, new Paint());
     }
 
     /**

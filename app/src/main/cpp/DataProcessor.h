@@ -24,18 +24,26 @@ public:
             field(field){}
     void full(int tx, int ty, int bx, int by);
     int defValue(int x, int y);
+    struct SwapResult {
+        int id;
+        int count;
+    };
     template < class Check>
-    int swap(int x1, int y1, int x2, int y2, Check& check);
+    std::tuple<SwapResult, SwapResult> swap(int x1, int y1, int x2, int y2, Check& check);
 
     int elements_total() { return elemetTotal;}
 };
 
 template < class Check>
-int DataProcessor::swap(int x1, int y1, int x2, int y2, Check& check) {
+std::tuple<DataProcessor::SwapResult, DataProcessor::SwapResult> DataProcessor::swap(int x1, int y1, int x2, int y2, Check& check) {
     std::swap(field->getValue(x1, y1), field->getValue(x2, y2));
-    auto cleanSize = check(x1, y1);
-    cleanSize += check(x2, y2);
-    return cleanSize;
+    SwapResult first, second;
+    first.id =field->getValue(x1, y1);
+    second.id =field->getValue(x2, y2);
+
+    first.count = check(x1, y1);
+    second.count = check(x2, y2);
+    return {first, second};
 }
 
 #endif //DOFAST_DATAPROCESSOR_H
