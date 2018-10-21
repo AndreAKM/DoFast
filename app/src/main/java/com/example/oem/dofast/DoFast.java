@@ -46,7 +46,7 @@ public class DoFast extends AppCompatActivity {
      */
     public static final int FieldSize = 8;  //! <size of game field in game blocks
     public static final int ColorCount = 5; //! <count of blocks color variants
-    public static final int SeqentialSize = 3;
+    public static final int sequenceSize = 3;
 
     private static final String FieldState = "FieldState"; //! <
     private static final String CounterState = "CounterState";
@@ -60,7 +60,7 @@ public class DoFast extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Display display = getWindowManager().getDefaultDisplay();
 
-        engine = new Engine(FieldSize, ColorCount, SeqentialSize);
+        engine = new Engine(FieldSize, ColorCount, sequenceSize);
 
         int widht = display.getWidth();
         int height = display.getHeight();

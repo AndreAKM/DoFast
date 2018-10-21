@@ -5,7 +5,9 @@
 #ifndef DOFAST_TARGET_H
 #define DOFAST_TARGET_H
 
-
+/**
+ * @class definition play target
+ */
 class SameSequentialTarget {
     const int maxSize;
     const int minSize;
@@ -18,14 +20,41 @@ class SameSequentialTarget {
 public:
     SameSequentialTarget(int minSize, int maxSize, int idTotal) :
             maxSize(maxSize), minSize(minSize), idTotal(idTotal){}
+    /**
+     * return target value id
+     */
     int targetId();
+    /**
+     * return size of sequence
+     */
     int targetSize();
+    /**
+     * create new task
+     */
     void nextTask();
+    /**
+     * return current task counter
+     */
     int taskCount();
+    /**
+     * retunr task result koeffecient. It used as prize for player.
+     */
     int taskResult();
+    /**
+     * return true if the task was success finished
+     */
     bool isDone();
+    /**
+     * return true if now player does not have a task
+     */
     bool isFinish();
+    /**
+     * increase task counter
+     */
     void iter();
+    /**
+     * register result of changed field
+     */
     void regChange(int id, int size);
 
 private:

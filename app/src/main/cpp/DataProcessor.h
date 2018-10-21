@@ -9,6 +9,9 @@
 #include <memory>
 #include "Field.h"
 
+/**
+ * @class DataProcessor encapsulate operatinh whit game data
+ */
 class DataProcessor {
     /**
      * General the enging settings
@@ -22,12 +25,24 @@ public:
             elemetTotal(elCount + 1),
             SequenceSize(SequenceSize),
             field(field){}
+    /**
+     * full game field
+     */
     void full(int tx, int ty, int bx, int by);
+    /**
+     * defenition value for a block
+     */
     int defValue(int x, int y);
+    /**
+     * structure save result of move a block in new place.
+     */
     struct SwapResult {
         int id;
         int count;
     };
+    /**
+     * swap block values
+     */
     template < class Check>
     std::tuple<SwapResult, SwapResult> swap(int x1, int y1, int x2, int y2, Check& check);
 

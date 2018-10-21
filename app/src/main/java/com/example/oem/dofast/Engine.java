@@ -14,13 +14,26 @@ import org.json.JSONException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @class Engine is wrapper under native Engine
+ */
 public class Engine {
     private static final String TAG = Engine.class.getName();
 
-    public Engine(int fieldSize, int elCount, int SequentialSize) {
-        T = createEngine(fieldSize, elCount, SequentialSize);
+    /**
+     * constructor
+     * @param fieldSize game field size
+     * @param elCount count of block colors
+     * @param sequenceSize length of sequence the same blocks
+     */
+    public Engine(int fieldSize, int elCount, int sequenceSize) {
+        T = createEngine(fieldSize, elCount, sequenceSize);
     }
 
+    /**
+     * destroy native
+     * @throws Throwable
+     */
     @Override
     protected void finalize() throws Throwable {
         destry(T);
@@ -145,45 +158,91 @@ public class Engine {
     public int getCount(){return getCount(T);}
 
     /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
+     * lock data to change
      */
-
     public void startChanging() {
         startChanging(T);
     }
 
-    public void setElvalue(int x, int y, int anInt) {
-        setElvalue(T, x, y, anInt);
+    /**
+     * load new data
+     * @param x - coordinate in row
+     * @param y - coordinate in column
+     * @param value - new value
+     */
+    public void setElvalue(int x, int y, int value) {
+        setElvalue(T, x, y, value);
     }
+
+    /**
+     * get block value
+     * @param x - coordinate in row
+     * @param y - coordinate in column
+     * @return
+     */
     public int getElvalue(int x, int y) {
         return getElvalue(T, x, y);
     }
 
+    /**
+     * unlock data
+     */
     public void endChanging() {
         endChanging(T);
     }
+
+    /**
+     * create new task for player
+     */
     public void getNewTask() {
         getNewTask(T);
     }
+
+    /**
+     * get how mach action players has to do the task
+     * @return count of turns which left to miss the task
+     */
     public int getTaskCount() {
         return getTaskCount(T);
     }
+
+    /**
+     * check what last task was finished success
+     * @return true if task finished success.
+     */
     public boolean isDone() {
         return isDone(T);
     }
+
+    /**
+     * task was finished
+     * @return return true if task finished
+     */
     public boolean isFinish() {
         return isFinish(T);
     }
+
+    /**
+     * return how much blocks for task
+     * @return blocks count
+     */
     public int getTargetSequentSize() {
         return getTargetSequentSize(T);
     }
+
+    /**
+     * return color blocks for task
+     * @return color
+     */
     public int getTargetColor() {
         return color.get(getTargetIdValue(T));
     }
 
-
-    private native long createEngine(int fieldSize, int elCount, int SequentialSize);
+    /**
+     * A native method that is implemented by the 'native-lib' native library,
+     * which is packaged with this application.
+     */
+    private native long createEngine(int fieldSize, int elCount, int sequenceSize);
     private native void destry(long T);
     private native int getElvalue(long T, int x, int y);
     private native void swap(long T, int x1, int y1, int x2, int y2);
