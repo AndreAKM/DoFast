@@ -5,6 +5,7 @@
 #include "DataProcessor.h"
 #include <vector>
 #include "log.h"
+
 void DataProcessor::full(int tx, int ty, int bx, int by) {
 
     for (int x = tx; x < bx; ++x) {

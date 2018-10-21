@@ -31,7 +31,7 @@
   * 5) add int constructor factory methods to create WinCondition and Field;
   * 6) add supporting of difirence size for widht anf height.
   */
-template<class WinCondition>
+template<class WinCondition, class Target>
 class Engine {
     const int SequenceSize; //!< number of element sequence to win step
 
@@ -52,7 +52,7 @@ class Engine {
     std::shared_ptr<Field> field; //!< gane field
     std::shared_ptr<DataProcessor> dataProcessor;
     std::shared_ptr<WinCondition> win; //!< game rule startegy
-
+    std::shared_ptr<Target> task;
 public:
 
     /**
@@ -117,73 +117,97 @@ public:
      * getter of conter
      * @return count of blocks which value was chenged from last reading
      */
-    int count()const { return countVoit;}
+    int count()const {
+        return countVoit;
+    }
+
+    void nextTask() {
+        task->nextTask();
+    }
+    int taskCount() {
+        return task->taskCount();
+    }
+    bool isDone() {
+        return task->isDone();
+    }
+    bool isFinish(){
+        return task->isFinish();
+    }
+    int targetId() {
+        return task->targetId();
+    }
+    int targetSize(){
+        return task->targetSize();
+    }
 
 private:
     bool swap(int x1, int y1, int x2, int y2);
     void swap(std::tuple<int, int, int, int> coor);
 };
 
-
-
 #include <cstdlib>
 #include <unordered_set>
 #include <algorithm>
 #include <cstring>
-template < class WinCondition>
-Engine<WinCondition>::Engine(int fieldSize, int elCount, int SequenceSize):
+template < class WinCondition, class Target>
+Engine<WinCondition, Target>::Engine(int fieldSize, int elCount, int SequenceSize):
         SequenceSize(SequenceSize),
         reading(false),
         processing(false),
         field(new Field(fieldSize, fieldSize)),
         dataProcessor(new DataProcessor(field, elCount, SequenceSize)),
-win(new WinCondition(field, fieldSize, fieldSize, SequenceSize))
+        win(new WinCondition(field, fieldSize, fieldSize, SequenceSize)),
+        task(new Target(SequenceSize+1, SequenceSize * 2, elCount))
 {
     dataProcessor->full(0, 0, fieldSize, fieldSize);
     changed = true;
 }
-template < class WinCondition>
-void Engine<WinCondition>::action(int x1, int y1, int x2, int y2) {
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::action(int x1, int y1, int x2, int y2) {
     if(field->getValue(x1, y1) == Field::defaultValue || field->getValue(x2, y2) == Field::defaultValue)
         return;
     if(swap(x1,y1,x2,y2) == false) {
         std::swap( field->getValue(x2,y2), field->getValue(x1,y1));
     }
+    task->iter();
 }
-template < class WinCondition>
-bool Engine<WinCondition>::swap(int x1, int y1, int x2, int y2) {
+template < class WinCondition, class Target>
+bool Engine<WinCondition, Target>::swap(int x1, int y1, int x2, int y2) {
     std::unique_lock<std::mutex>lk (mut);
     changeState.wait(lk, [&] {return reading == false;});
     auto check = [&](int x, int y){ return win->checkEl(x, y);};
-    countVoit += dataProcessor->swap(x1, y1, x2, y2, check);
+    auto [first, second]= dataProcessor->swap(x1, y1, x2, y2, check);
+    task->regChange(first.id, first.count);
+    task->regChange(second.id, second.count);
+    countVoit += (first.count + second.count) * task->taskResult();
     changed = countVoit != 0;
     return changed;
 }
-template < class WinCondition>
-int Engine<WinCondition>::getValue(int x, int y) const{
+template < class WinCondition, class Target>
+int Engine<WinCondition, Target>::getValue(int x, int y) const{
     return field->getValue(x,y);
 }
-template < class WinCondition>
-void Engine<WinCondition>::startChanging(){
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::startChanging(){
     std::unique_lock<std::mutex>lk (mut);
     changeState.wait(lk, [&] {return processing == false && reading == false;});
     processing = true;
 }
-template < class WinCondition>
-void Engine<WinCondition>::endChanging(){
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::endChanging(){
     processing = false;
     changed = true;
     changeState.notify_all();
 }
 
-template < class WinCondition>
-void Engine<WinCondition>::startReading(){
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::startReading(){
     std::unique_lock<std::mutex>lk (mut);
     changeState.wait(lk, [&] {return processing == false;});
     reading = true;
 }
-template < class WinCondition>
-void Engine<WinCondition>::endReading(){
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::endReading(){
     reading = false;
     changed = false;
     changeState.notify_all();
@@ -208,8 +232,8 @@ void Engine<WinCondition>::endReading(){
     changed = true;
     changeState.notify_all();
 }
-template < class WinCondition>
-void Engine<WinCondition>::swap(std::tuple<int, int, int, int> coor){
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::swap(std::tuple<int, int, int, int> coor){
     int x1, y1, x2, y2;
     std::tie(x1, y1, x2, y2) = coor;
     swap(x1, y1, x2, y2);

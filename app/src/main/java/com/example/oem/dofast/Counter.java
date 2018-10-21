@@ -28,6 +28,7 @@ class Counter {
     public Counter(DoFast main) {
         this.main = main;
         prevCount = Calendar.getInstance().getTimeInMillis();
+        nextTargetTime = prevCount + 15 * 1000;
         sharedPreferences = main.getSharedPreferences(DoFast.GameName, Context.MODE_PRIVATE);
         bestResult = sharedPreferences.getInt(BestResultSP,0);
     }
@@ -48,6 +49,7 @@ class Counter {
     private double summ = 0.f;
     private long prevCount;
     private double timeInterval = 0.f;
+    private long nextTargetTime;
     private static final String SUMM = "SUMM";
     private static final String TIME = "TIME";
     private static final String DATA = "DATA";
@@ -59,7 +61,7 @@ class Counter {
      * serialize counter
      * @return return jason which contain necessary data to continue measure
      */
-    public  String saveState() {
+    public String saveState() {
         JSONObject state = new JSONObject();
         try {
             state.put(SUMM, summ);
@@ -109,8 +111,8 @@ class Counter {
             e.printStackTrace();
         }
         Log.d(TAG, "success loading counter state");
-
     }
+
     /**
      * counting play results
      * counting how mach block player could deleted during last 15 seconds
@@ -153,6 +155,10 @@ class Counter {
                 }
             }
 
+            if(ct > nextTargetTime) {
+                main.engine.getNewTask();
+                nextTargetTime = ct + 15 * 1000;
+            }
         }
 
     }

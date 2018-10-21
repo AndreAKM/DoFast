@@ -9,9 +9,9 @@
 #include "Engine.h"
 #include "EqualWiner.h"
 #include "Field.h"
+#include "Target.h"
 
-
-using ENGENE = Engine<EqualWiner>; //!< Engine instance type
+using ENGENE = Engine<EqualWiner, SameSequentialTarget>; //!< Engine instance type
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -127,19 +127,20 @@ Java_com_example_oem_dofast_Engine_endChanging(JNIEnv *env, jobject instance, jl
 }
 
 extern "C"
-JNIEXPORT jint JNICALL
+JNIEXPORT void JNICALL
 Java_com_example_oem_dofast_Engine_getNewTask(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
+        en->nextTask();
     }
-    return 0;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_oem_dofast_Engine_getTaskValue(JNIEnv *env, jobject instance, jlong T, jint id) {
+Java_com_example_oem_dofast_Engine_getTaskCount(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
+        return en->taskCount();
     }
     return 0;
 }
@@ -149,6 +150,7 @@ JNIEXPORT jboolean JNICALL
 Java_com_example_oem_dofast_Engine_isDone(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
+        return en->isDone();
     }
     return false;
 }
@@ -158,6 +160,27 @@ JNIEXPORT jboolean JNICALL
 Java_com_example_oem_dofast_Engine_isFinish(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
+        return en->isFinish();
     }
     return false;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_oem_dofast_Engine_getTargetSequentSize(JNIEnv *env, jobject instance, jlong T) {
+    if(T != 0) {
+        ENGENE* en = (ENGENE*) T;
+        return  en->targetSize();
+    }
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_oem_dofast_Engine_getTargetIdValue(JNIEnv *env, jobject instance, jlong T) {
+    if(T != 0) {
+        ENGENE* en = (ENGENE*) T;
+        return en->targetId();
+    }
+    return 0;
 }
