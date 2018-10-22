@@ -168,7 +168,7 @@ Engine<WinCondition, Target>::Engine(int fieldSize, int elCount, int SequenceSiz
         field(new Field(fieldSize, fieldSize)),
         dataProcessor(new DataProcessor(field, elCount, SequenceSize)),
         win(new WinCondition(field, fieldSize, fieldSize, SequenceSize)),
-        task(new Target(SequenceSize+1, SequenceSize * 2, elCount))
+        task(new Target(SequenceSize+1, SequenceSize * 2, elCount, dataProcessor))
 {
     dataProcessor->full(0, 0, fieldSize, fieldSize);
     changed = true;

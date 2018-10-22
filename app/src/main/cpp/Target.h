@@ -5,6 +5,8 @@
 #ifndef DOFAST_TARGET_H
 #define DOFAST_TARGET_H
 
+#include <memory>
+#include "DataProcessor.h"
 /**
  * @class definition play target
  */
@@ -17,9 +19,11 @@ class SameSequentialTarget {
     int count = -1;
     bool done = false;
     bool finish = true;
+    std::shared_ptr<DataProcessor> processor;
+
 public:
-    SameSequentialTarget(int minSize, int maxSize, int idTotal) :
-            maxSize(maxSize), minSize(minSize), idTotal(idTotal){}
+    SameSequentialTarget(int minSize, int maxSize, int idTotal, std::shared_ptr<DataProcessor> processor) :
+            maxSize(maxSize), minSize(minSize), idTotal(idTotal), processor(processor){}
     /**
      * return target value id
      */

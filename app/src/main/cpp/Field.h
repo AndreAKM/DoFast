@@ -36,7 +36,7 @@ public:
      * @param y - coorodinate in column
      * @return id of block value
      */
-    int getValue(int x, int y)const {
+    char getValue(int x, int y)const {
         char id = field[x * YSize_ + y];
         __android_log_print(ANDROID_LOG_DEBUG, "native:FIELD", "(%d, %d) -> %d = %d", x, y, x * YSize_ + y, id);
         return id;

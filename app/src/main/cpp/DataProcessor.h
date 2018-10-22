@@ -26,6 +26,10 @@ public:
             SequenceSize(SequenceSize),
             field(field){}
     /**
+     * return value id which is the most on the field
+     */
+    int maxValueId();
+    /**
      * full game field
      */
     void full(int tx, int ty, int bx, int by);

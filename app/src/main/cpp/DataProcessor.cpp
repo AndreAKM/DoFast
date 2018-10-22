@@ -41,3 +41,14 @@ int DataProcessor::defValue(int x, int y) {
     }
     return res;
 }
+
+int DataProcessor::maxValueId() {
+    std::vector<char> el(elemetTotal, 0);
+    for (int x = 0; x != field->widht(); ++x) {
+        for(int y =0; y != field->height(); ++y) {
+            ++el[field->getValue(x, y)];
+        }
+    }
+    auto it = std::max_element(el.begin() + 1, el.end());
+    return std::distance(el.begin(), it);
+}
