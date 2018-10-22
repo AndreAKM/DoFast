@@ -12,7 +12,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -220,7 +219,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         paint.setStyle(Paint.Style.FILL);
         for (int y = gameFieldborderRect.top + shiftY; y < gameFieldborderRect.top + radius; y += step){
             for (int x = gameFieldborderRect.left + shiftX; x < gameFieldborderRect.left + radius; x += step){
-                Log.d(TAG, String.format("(%d, %d) -> (%d, %d)",x,y,idFieldX(x), idFieldY(y)));
                 paint.setColor(main.engine.getColor(idFieldX(x), idFieldY(y)));
                 canvas.drawRect(x, y, x + step, y + step, paint);
             }

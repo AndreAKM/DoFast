@@ -47,7 +47,7 @@ class Engine {
     /**
      * other data
      */
-    long countVoit = 0; //!<  counte how mach blocs was wined from previous reading
+    std::atomic_int countVoit = 0; //!<  counte how mach blocs was wined from previous reading
 
     std::shared_ptr<Field> field; //!< gane field
     std::shared_ptr<DataProcessor> dataProcessor;
@@ -76,7 +76,7 @@ public:
      * @param y - y coordinate of block
      * @param value- a new id value for block
      */
-    void setValue(int x, int y, int value) {field->getValue(x, y) = value;}
+    void setValue(int x, int y, int value);
 
     /**
      * checks of chenging
@@ -121,26 +121,37 @@ public:
         return countVoit;
     }
 
-    void nextTask() {
-        task->nextTask();
-    }
-    int taskCount() {
-        return task->taskCount();
-    }
-    bool isDone() {
-        return task->isDone();
-    }
-    bool isFinish(){
-        return task->isFinish();
-    }
-    int targetId() {
-        return task->targetId();
-    }
-    int targetSize(){
-        return task->targetSize();
-    }
+    void nextTask();
+    int taskCount() ;
+    bool isDone() ;
+    bool isFinish();
+    int targetId();
+    int targetSize();
 
 private:
+    struct LockWrite {
+        Engine<WinCondition, Target>* en;
+        LockWrite(Engine<WinCondition, Target>* en): en(en) {
+            en->lockWriting();
+        }
+        ~LockWrite() {
+            en->unlockWriting();
+        }
+    };
+    struct LockReading {
+        Engine<WinCondition, Target>* en;
+        LockReading(Engine<WinCondition, Target>* en): en(en) {
+            en->lockReading();
+        }
+        ~LockReading() {
+            en->unlockReading();
+        }
+    };
+    void lockReading();
+    void unlockReading();
+    void lockWriting();
+    void unlockWriting();
+
     bool swap(int x1, int y1, int x2, int y2);
     void swap(std::tuple<int, int, int, int> coor);
 };
@@ -164,6 +175,9 @@ Engine<WinCondition, Target>::Engine(int fieldSize, int elCount, int SequenceSiz
 }
 template < class WinCondition, class Target>
 void Engine<WinCondition, Target>::action(int x1, int y1, int x2, int y2) {
+    LOGD("action (%d, %d),(%d, %d)", x1, y1, x2, y2);
+    LockWrite lock(this);
+
     if(field->getValue(x1, y1) == Field::defaultValue || field->getValue(x2, y2) == Field::defaultValue)
         return;
     if(swap(x1,y1,x2,y2) == false) {
@@ -173,8 +187,7 @@ void Engine<WinCondition, Target>::action(int x1, int y1, int x2, int y2) {
 }
 template < class WinCondition, class Target>
 bool Engine<WinCondition, Target>::swap(int x1, int y1, int x2, int y2) {
-    std::unique_lock<std::mutex>lk (mut);
-    changeState.wait(lk, [&] {return reading == false;});
+    LOGD("swap (%d, %d),(%d, %d)", x1, y1, x2, y2);
     auto check = [&](int x, int y){ return win->checkEl(x, y);};
     auto [first, second]= dataProcessor->swap(x1, y1, x2, y2, check);
     task->regChange(first.id, first.count);
@@ -185,42 +198,75 @@ bool Engine<WinCondition, Target>::swap(int x1, int y1, int x2, int y2) {
 }
 template < class WinCondition, class Target>
 int Engine<WinCondition, Target>::getValue(int x, int y) const{
-    return field->getValue(x,y);
+    if(reading == true) return field->getValue(x,y);
+    return Field::defaultValue;
 }
 template < class WinCondition, class Target>
-void Engine<WinCondition, Target>::startChanging(){
+void Engine<WinCondition, Target>::setValue(int x, int y, int value) {
+    if(processing)field->getValue(x, y) = value;
+}
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::lockReading(){
+    std::unique_lock<std::mutex>lk (mut);
+    changeState.wait(lk, [&] {return processing == false;});
+    reading = true;
+    LOGD("lock for reading processing - %s, reading %s", to_sting(processing), to_sting(reading));
+};
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::unlockReading(){
+    reading = false;
+    changeState.notify_all();
+    LOGD("unlock for reading processing - %s, reading %s", to_sting(processing), to_sting(reading));
+};
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::lockWriting(){
     std::unique_lock<std::mutex>lk (mut);
     changeState.wait(lk, [&] {return processing == false && reading == false;});
     processing = true;
+    LOGD("lock for writing processing - %s, reading %s", to_sting(processing), to_sting(reading));
 }
 template < class WinCondition, class Target>
-void Engine<WinCondition, Target>::endChanging(){
+void Engine<WinCondition, Target>::unlockWriting(){
     processing = false;
-    changed = true;
     changeState.notify_all();
+    LOGD("unlock for writing processing - %s, reading %s", to_sting(processing), to_sting(reading));
+};
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::startChanging() {
+    LOGD("startChanging()");
+    lockWriting();
+};
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::endChanging(){
+    LOGD("endChanging()");
+    unlockWriting();
+    changed = true;
+    LOGD("unlock for changing");
 }
 
 template < class WinCondition, class Target>
 void Engine<WinCondition, Target>::startReading(){
-    std::unique_lock<std::mutex>lk (mut);
-    changeState.wait(lk, [&] {return processing == false;});
-    reading = true;
+    LOGD("startReading()");
+    lockReading();
 }
+
 template < class WinCondition, class Target>
 void Engine<WinCondition, Target>::endReading(){
-    reading = false;
+    LOGD("endReading()");
+    unlockReading();
     changed = false;
-    changeState.notify_all();
     countVoit = 0;
     auto res = win->move();
+    LockWrite lock(this);
     if(res.size() == 0){
         if(win->hasEmptyBlocks()){
             dataProcessor->full(0, 0, field->widht(), field->height());
+            LOGD("changed sat true becouse field has epty blocks");
             changed = true;
         }
+        LOGD("changed is %s", to_sting(changed));
         return;
     }
-    processing = true;
     win->refrashe();
     for (auto& r: res) {
         swap(r);
@@ -228,9 +274,8 @@ void Engine<WinCondition, Target>::endReading(){
     if(changed == false) {
         dataProcessor->full(0, 0, field->widht(), field->height());
     }
-    processing = false;
+    LOGD("changed sat true becouse we move some blocks");
     changed = true;
-    changeState.notify_all();
 }
 template < class WinCondition, class Target>
 void Engine<WinCondition, Target>::swap(std::tuple<int, int, int, int> coor){
@@ -239,4 +284,34 @@ void Engine<WinCondition, Target>::swap(std::tuple<int, int, int, int> coor){
     swap(x1, y1, x2, y2);
 }
 
+template < class WinCondition, class Target>
+void Engine<WinCondition, Target>::nextTask() {
+    LockWrite lock(this);
+    task->nextTask();
+}
+template < class WinCondition, class Target>
+int Engine<WinCondition, Target>::taskCount() {
+    LockReading lock(this);
+    return task->taskCount();
+}
+template < class WinCondition, class Target>
+bool Engine<WinCondition, Target>::isDone() {
+    LockReading lock(this);
+    return task->isDone();
+}
+template < class WinCondition, class Target>
+bool Engine<WinCondition, Target>::isFinish(){
+    LockReading lock(this);
+    return task->isFinish();
+}
+template < class WinCondition, class Target>
+int Engine<WinCondition, Target>::targetId() {
+    LockReading lock(this);
+    return task->targetId();
+}
+template < class WinCondition, class Target>
+int Engine<WinCondition, Target>::targetSize(){
+    LockReading lock(this);
+    return task->targetSize();
+}
 #endif //GAME_ENGINE_H

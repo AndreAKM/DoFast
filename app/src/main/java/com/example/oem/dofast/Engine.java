@@ -6,7 +6,6 @@
 package com.example.oem.dofast;
 
 import android.graphics.Color;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,7 +64,6 @@ public class Engine {
     public void loadState(String state) {
         if (state.isEmpty() == true) return;
 
-        Log.d(TAG, "onRestoreInstanceState fss: " + state);
         try {
             startChanging();
             JSONArray serialyze = new JSONArray(state);
@@ -103,7 +101,6 @@ public class Engine {
      */
     Integer getColor(int x, int y) {
         int id = getElvalue(T, x, y);
-        Log.d(TAG, String.format("(%d, %d) - %d",x,y,id));
         return color.get(getElvalue(T, x, y));
     }
 
