@@ -8,7 +8,7 @@
 
 void SameSequentialTarget::nextTask() {
     targSize = minSize + (std::rand() % (maxSize - minSize));
-    targID = 1 + (std::rand() % (idTotal - 1));
+    targID = 1 + (std::rand() % (idTotal ));
     count = (idTotal / 2) * (1 + targSize - minSize);
     done = false;
     finish = false;
