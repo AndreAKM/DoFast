@@ -19,6 +19,9 @@ import java.util.List;
 public class Engine {
     private static final String TAG = Engine.class.getName();
 
+    int fieldSize;
+    int elCount;
+    int sequenceSize;
     /**
      * constructor
      * @param fieldSize game field size
@@ -26,9 +29,16 @@ public class Engine {
      * @param sequenceSize length of sequence the same blocks
      */
     public Engine(int fieldSize, int elCount, int sequenceSize) {
+        this.fieldSize = fieldSize;
+        this.elCount = elCount;
+        this.sequenceSize = sequenceSize;
         T = createEngine(fieldSize, elCount, sequenceSize);
     }
 
+    public void flush(){
+        destry(T);
+        T = createEngine(fieldSize, elCount, sequenceSize);
+    }
     /**
      * destroy native
      * @throws Throwable
@@ -81,7 +91,7 @@ public class Engine {
     }
 
     List<Integer> color =
-            Arrays.asList(Color.BLACK, Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.LTGRAY);
+            Arrays.asList(Color.BLACK, 0xFF8cc800, 0xFF01b5b7, 0xFFd8d051, 0xFFe88a01, 0xFFe90040);
     /** < block colors collection
      *
      * first element is default color. The color used fpr deleted blocs.
@@ -101,7 +111,7 @@ public class Engine {
      */
     Integer getColor(int x, int y) {
         int id = getElvalue(T, x, y);
-        return color.get(getElvalue(T, x, y));
+        return color.get(id);
     }
 
     /**

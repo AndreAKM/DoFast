@@ -9,6 +9,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -25,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
@@ -72,12 +77,48 @@ public class DoFast extends AppCompatActivity {
 
         LinearLayout surface = (LinearLayout)findViewById(R.id.middleSurface);
         surface.addView(gameView);
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     }
 
     SharedPreferences sharedPreferences = null;
     GameView gameView = null;
     Counter counter = null;
     Engine engine = null;
+    SensorManager sensorManager;
+    private final SensorEventListener sensorListener = new SensorEventListener() {
+        long prevTime, time;
+        float accelPrevious, accel;
+        int count=0;
+        public void onSensorChanged(SensorEvent sensorEvent) {
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
+            accelPrevious = accel;
+            accel = (float) Math.sqrt((double) (x * x + y * y + z * z));
+
+            time = Calendar.getInstance().getTimeInMillis();
+            if(time - prevTime > 1000)
+                count = 0;
+            if (accel - accelPrevious > 4) {
+                if (count == 0){
+                    prevTime = time;
+                }
+                if(count >= 1) {
+                    if(time - prevTime < 500) {
+                        Log.d(TAG, String.format("create new engine" ));
+                        engine.flush();
+                    }
+                }
+                Log.d(TAG, String.format("time - %d, count -%d",time - prevTime , count ));
+                ++count;
+            }
+        }
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -96,7 +137,17 @@ public class DoFast extends AppCompatActivity {
         super.onResume();
         gameView.setDrawing(true);
 
+        sensorManager.registerListener(
+                sensorListener,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
         Log.d(TAG, "onResume");
+    }
+
+    @Override
+    protected void onStop() {
+        sensorManager.unregisterListener(sensorListener);
+        super.onStop();
     }
 
     public Engine getEngine() {

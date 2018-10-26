@@ -10,7 +10,7 @@ void SameSequentialTarget::nextTask() {
     targSize = minSize + (std::rand() % (maxSize - minSize));
 
     targID = processor->maxValueId();//1 + (std::rand() % (idTotal ));
-    count = (idTotal / 2) * (1 + targSize - minSize);
+    count = (idTotal ) * (1 + targSize - minSize);
     done = false;
     finish = false;
 }
@@ -28,7 +28,7 @@ int SameSequentialTarget::taskResult() {
     return (isDone() && count != -1) ? targSize : 1;
 }
 bool SameSequentialTarget::isDone() {
-    return done;
+    return done && count > -1;
 }
 bool SameSequentialTarget::isFinish() {
     return finish;
@@ -43,6 +43,7 @@ void SameSequentialTarget::regChange(int id, int size) {
     }
     if (targID == id && targSize <= size) {
         done = true;
+        count = 1;
     }
     if(count == 0 || done) {
         flash();
@@ -50,7 +51,7 @@ void SameSequentialTarget::regChange(int id, int size) {
 }
 
 void SameSequentialTarget::flash() {
-    targID = -1;
+    targID = 0;
     targSize = -1;
     finish = true;
 }

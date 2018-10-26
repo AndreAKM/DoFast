@@ -168,7 +168,7 @@ Engine<WinCondition, Target>::Engine(int fieldSize, int elCount, int SequenceSiz
         field(new Field(fieldSize, fieldSize)),
         dataProcessor(new DataProcessor(field, elCount, SequenceSize)),
         win(new WinCondition(field, fieldSize, fieldSize, SequenceSize)),
-        task(new Target(SequenceSize+1, SequenceSize * 2, elCount, dataProcessor))
+        task(new Target(SequenceSize+1, SequenceSize * 2 - 1, elCount, dataProcessor))
 {
     dataProcessor->full(0, 0, fieldSize, fieldSize);
     changed = true;
@@ -198,7 +198,7 @@ bool Engine<WinCondition, Target>::swap(int x1, int y1, int x2, int y2) {
 }
 template < class WinCondition, class Target>
 int Engine<WinCondition, Target>::getValue(int x, int y) const{
-    if(reading == true) return field->getValue(x,y);
+    if(processing != true) return field->getValue(x,y);
     return Field::defaultValue;
 }
 template < class WinCondition, class Target>

@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -55,7 +56,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         bestCountBorderRect = new Rect(shift, t, rad - shift, t + highttext);
         border = BitmapFactory.decodeResource(getResources(), R.drawable.border);
         background = BitmapFactory.decodeResource(
-                getResources(), R.drawable.background);
+                getResources(), R.drawable.sweets);
         fullScreanRect = new Rect(0, 0, screanW, screanH);
         this.counter =  counter;
         init();
@@ -104,11 +105,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             backgroundDraw(canvas);
         }
         if(mooving) {
-            fieldDrowing(canvas);
+            int x= idFieldX(initX);
+            int y = idFieldY(initY);
+
+            fieldDrowing(canvas, x, y);
             moveDrowing(canvas);
         }
         if (isDrawing()) {
-            fieldDrowing(canvas);
+            fieldDrowing(canvas, -1, -1);
             counter.counting();
             drawing = false;
         }
@@ -184,11 +188,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         int centr = screanW / 2;
         int start = centr - widhtTarget / 2;
         for (int x = start, count = 0; count < main.engine.getTargetSequentSize(); x += step + shiftX, ++count) {
-            paint.setColor(main.engine.getTargetColor());
-            canvas.drawRect(x, y, x + step, y + step, paint);
+            int color = main.engine.getTargetColor();
+            if (color == main.engine.getDefaultColor()) return;
+            paint.setColor(color);
+            canvas.drawRoundRect(new RectF(x, y, x + step, y + step), cornrad, cornrad, paint);
         }
     }
 
+    int cornrad = 10;
     /**
      * draw flying block which follows to user finger
      * @param canvas - canvas
@@ -196,16 +203,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     void moveDrowing(Canvas canvas) {
         int x= idFieldX(initX);
         int y = idFieldY(initY);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(main.engine.getDefaultColor());
-        float xx = shiftX + gameFieldborderRect.left + x*step;
-        float yy = shiftY + gameFieldborderRect.top + y*step;
-        canvas.drawRect(xx, yy, xx + step, yy + step, paint);
+        //paint.setStyle(Paint.Style.FILL);
+        //paint.setColor(main.engine.getDefaultColor());
+        //float xx = shiftX + gameFieldborderRect.left + x*step;
+        //float yy = shiftY + gameFieldborderRect.top + y*step;
+        //canvas.drawRoundRect(new RectF(xx, yy, xx + step, yy + step), cornrad, cornrad, paint);
         float x1 = endX - (step/2);
         float y1 = endY - (step/2);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(main.engine.getColor(x , y));
-        canvas.drawRect(x1, y1, x1 + step, y1 + step, paint);
+        canvas.drawRoundRect(new RectF(x1, y1, x1 + step, y1 + step), cornrad, cornrad, paint);
 
     }
 
@@ -213,14 +220,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * draw game field
      * @param canvas - canvas
      */
-    void fieldDrowing(Canvas canvas) {
+    void fieldDrowing(Canvas canvas, int missx, int missy) {
         
         main.engine.startReading();
         paint.setStyle(Paint.Style.FILL);
         for (int y = gameFieldborderRect.top + shiftY; y < gameFieldborderRect.top + radius; y += step){
             for (int x = gameFieldborderRect.left + shiftX; x < gameFieldborderRect.left + radius; x += step){
-                paint.setColor(main.engine.getColor(idFieldX(x), idFieldY(y)));
-                canvas.drawRect(x, y, x + step, y + step, paint);
+                int color = main.engine.getColor(idFieldX(x), idFieldY(y));
+                if(color == main.engine.getDefaultColor() || (idFieldX(x) == missx && idFieldY(y) == missy)) continue;
+                paint.setColor(color);
+                canvas.drawRoundRect(new RectF(x, y, x + step, y + step), cornrad, cornrad, paint);
             }
         }
         main.engine.endReading();
