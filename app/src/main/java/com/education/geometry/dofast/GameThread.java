@@ -3,13 +3,9 @@
  * Create by Andrey Moiseenko for DoFast project
  */
 
-package com.example.oem.dofast;
+package com.education.geometry.dofast;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 /**
@@ -50,7 +46,7 @@ public class GameThread extends Thread {
                 }
             }
             catch (Exception e) {
-                Log.d(TAG, "Exception: " + e.toString());
+                Logger.Debug(TAG, "Exception: " + e.toString());
             }
             finally {
                 if (c != null) {

@@ -15,7 +15,7 @@ using ENGENE = Engine<EqualWiner, SameSequentialTarget>; //!< Engine instance ty
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_dofast_Engine_destry(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_destry(JNIEnv *env, jobject instance, jlong T) {
 
     if(T != 0) {
     ENGENE* en = (ENGENE*) T;
@@ -26,7 +26,7 @@ Java_com_example_oem_dofast_Engine_destry(JNIEnv *env, jobject instance, jlong T
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_example_oem_dofast_Engine_createEngine(JNIEnv *env, jobject instance, jint fieldSize,
+Java_com_education_geometry_dofast_Engine_createEngine(JNIEnv *env, jobject instance, jint fieldSize,
                                             jint elCount, jint sequencialSize) {
 
     ENGENE* en = new ENGENE(fieldSize, elCount, sequencialSize);
@@ -36,7 +36,7 @@ Java_com_example_oem_dofast_Engine_createEngine(JNIEnv *env, jobject instance, j
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_oem_dofast_Engine_getElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y) {
+Java_com_education_geometry_dofast_Engine_getElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y) {
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -47,7 +47,7 @@ Java_com_example_oem_dofast_Engine_getElvalue(JNIEnv *env, jobject instance, jlo
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_dofast_Engine_swap__JIIII(JNIEnv *env, jobject instance, jlong T, jint x1, jint y1,
+Java_com_education_geometry_dofast_Engine_swap__JIIII(JNIEnv *env, jobject instance, jlong T, jint x1, jint y1,
                                     jint x2, jint y2) {
 
     if(T != 0) {
@@ -59,7 +59,7 @@ Java_com_example_oem_dofast_Engine_swap__JIIII(JNIEnv *env, jobject instance, jl
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_example_oem_dofast_Engine_isChange(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_isChange(JNIEnv *env, jobject instance, jlong T) {
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -70,7 +70,7 @@ Java_com_example_oem_dofast_Engine_isChange(JNIEnv *env, jobject instance, jlong
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_dofast_Engine_startReading__J(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_startReading__J(JNIEnv *env, jobject instance, jlong T) {
 
     if (T != 0) {
         ENGENE *en = (ENGENE *) T;
@@ -79,7 +79,7 @@ Java_com_example_oem_dofast_Engine_startReading__J(JNIEnv *env, jobject instance
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_dofast_Engine_endReading__J(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_endReading__J(JNIEnv *env, jobject instance, jlong T) {
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -89,7 +89,7 @@ Java_com_example_oem_dofast_Engine_endReading__J(JNIEnv *env, jobject instance, 
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_oem_dofast_Engine_getCount__J(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_getCount__J(JNIEnv *env, jobject instance, jlong T) {
 
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -100,7 +100,7 @@ Java_com_example_oem_dofast_Engine_getCount__J(JNIEnv *env, jobject instance, jl
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_dofast_Engine_setElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y,
+Java_com_education_geometry_dofast_Engine_setElvalue(JNIEnv *env, jobject instance, jlong T, jint x, jint y,
                                           jint value) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
@@ -110,7 +110,7 @@ Java_com_example_oem_dofast_Engine_setElvalue(JNIEnv *env, jobject instance, jlo
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_dofast_Engine_startChanging(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_startChanging(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         en->startChanging();
@@ -119,7 +119,7 @@ Java_com_example_oem_dofast_Engine_startChanging(JNIEnv *env, jobject instance, 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_dofast_Engine_endChanging(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_endChanging(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         en->endChanging();
@@ -128,7 +128,7 @@ Java_com_example_oem_dofast_Engine_endChanging(JNIEnv *env, jobject instance, jl
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_oem_dofast_Engine_getNewTask(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_getNewTask(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         en->nextTask();
@@ -137,7 +137,7 @@ Java_com_example_oem_dofast_Engine_getNewTask(JNIEnv *env, jobject instance, jlo
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_oem_dofast_Engine_getTaskCount(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_getTaskCount(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         return en->taskCount();
@@ -147,7 +147,7 @@ Java_com_example_oem_dofast_Engine_getTaskCount(JNIEnv *env, jobject instance, j
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_example_oem_dofast_Engine_isDone(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_isDone(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         return en->isDone();
@@ -157,7 +157,7 @@ Java_com_example_oem_dofast_Engine_isDone(JNIEnv *env, jobject instance, jlong T
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_example_oem_dofast_Engine_isFinish(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_isFinish(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         return en->isFinish();
@@ -167,7 +167,7 @@ Java_com_example_oem_dofast_Engine_isFinish(JNIEnv *env, jobject instance, jlong
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_oem_dofast_Engine_getTargetSequentSize(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_getTargetSequentSize(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         return  en->targetSize();
@@ -177,7 +177,7 @@ Java_com_example_oem_dofast_Engine_getTargetSequentSize(JNIEnv *env, jobject ins
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_oem_dofast_Engine_getTargetIdValue(JNIEnv *env, jobject instance, jlong T) {
+Java_com_education_geometry_dofast_Engine_getTargetIdValue(JNIEnv *env, jobject instance, jlong T) {
     if(T != 0) {
         ENGENE* en = (ENGENE*) T;
         return en->targetId();

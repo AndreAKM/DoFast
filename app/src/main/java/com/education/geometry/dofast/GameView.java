@@ -3,7 +3,7 @@
  * Create by Andrey Moiseenko for DoFast project
  */
 
-package com.example.oem.dofast;
+package com.education.geometry.dofast;
 
 import android.content.Context;
 import android.graphics.Bitmap;

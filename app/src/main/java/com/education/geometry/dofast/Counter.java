@@ -3,11 +3,10 @@
  * Create by Andrey Moiseenko for DoFast project
  */
 
-package com.example.oem.dofast;import android.content.Context;
+package com.education.geometry.dofast;import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.v4.util.Pair;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,11 +75,11 @@ class Counter {
             }
             state.put(DATA, data);
         } catch (JSONException e) {
-            Log.d(TAG, "couldn't save counter state: " + e.toString());
+            Logger.Debug(TAG, "couldn't save counter state: " + e.toString());
 
             e.printStackTrace();
         }
-        Log.d(TAG, "success save counter state: ");
+        Logger.Debug(TAG, "success save counter state: ");
 
         return state.toString();
     }
@@ -107,10 +106,10 @@ class Counter {
             actionResults.add(new Pair<>(result.getDouble(TIMESTAMP), result.getDouble(RESULT)));
         }
         } catch (JSONException e) {
-            Log.d(TAG, "couldn't load counter state: " + e.toString());
+            Logger.Debug(TAG, "couldn't load counter state: " + e.toString());
             e.printStackTrace();
         }
-        Log.d(TAG, "success loading counter state");
+        Logger.Debug(TAG, "success loading counter state");
     }
 
     /**
@@ -140,7 +139,7 @@ class Counter {
             summ += current;
             prevCount = ct;
             currentcount = (int) (summ * 60 /timeInterval) ;
-            Log.d(TAG, String.format("Counter: count %d, interval %f, curent %d sum %f, collect size %d", count, timeInterval, currentcount, summ, actionResults.size()));
+            Logger.Debug(TAG, String.format("Counter: count %d, interval %f, curent %d sum %f, collect size %d", count, timeInterval, currentcount, summ, actionResults.size()));
             count = 0;
             if (actionResults.size() >= 15) {
                 currentCounterColore = Color.MAGENTA;

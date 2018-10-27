@@ -3,19 +3,16 @@
  * Create by Andrey Moiseenko for DoFast project
  */
 
-package com.example.oem.dofast;
+package com.education.geometry.dofast;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Display;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -25,13 +22,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Random;
 
 /**
  * Activity class
@@ -58,7 +49,8 @@ public class DoFast extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
+
+        Logger.Debug(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -79,6 +71,7 @@ public class DoFast extends AppCompatActivity {
         surface.addView(gameView);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Logger.Debug(TAG, String.format("BuildConfig.DEBUG %b", BuildConfig.DEBUG));
     }
 
     SharedPreferences sharedPreferences = null;
@@ -106,11 +99,11 @@ public class DoFast extends AppCompatActivity {
                 }
                 if(count >= 1) {
                     if(time - prevTime < 500) {
-                        Log.d(TAG, String.format("create new engine" ));
+                        Logger.Debug(TAG, String.format("create new engine" ));
                         engine.flush();
                     }
                 }
-                Log.d(TAG, String.format("time - %d, count -%d",time - prevTime , count ));
+                Logger.Debug(TAG, String.format("time - %d, count -%d",time - prevTime , count ));
                 ++count;
             }
         }
@@ -122,9 +115,9 @@ public class DoFast extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState");
+        Logger.Debug(TAG, "onSaveInstanceState");
 
-        Log.d(TAG, "save state");
+        Logger.Debug(TAG, "save state");
         SharedPreferences.Editor e = sharedPreferences.edit();
         e.putString(FieldState, engine.saveState());
         e.putString(CounterState, counter.saveState());
@@ -141,7 +134,7 @@ public class DoFast extends AppCompatActivity {
                 sensorListener,
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
-        Log.d(TAG, "onResume");
+        Logger.Debug(TAG, "onResume");
     }
 
     @Override
@@ -155,7 +148,7 @@ public class DoFast extends AppCompatActivity {
     }
 
     protected void restore() {
-        Log.d(TAG, "restore");
+        Logger.Debug(TAG, "restore");
         String fss = sharedPreferences.getString(FieldState, "");
 
         counter.loadState(sharedPreferences.getString(CounterState,""));
